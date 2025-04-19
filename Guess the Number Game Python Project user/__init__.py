@@ -1,0 +1,1 @@
+type nul > __init__.py

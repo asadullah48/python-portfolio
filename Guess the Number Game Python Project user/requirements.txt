@@ -1,0 +1,5 @@
+# This file is used to install the required packages for the Streamlit app.
+# It is recommended to use a virtual environment to avoid conflicts with other packages.
+    altair>=5.5.0,
+    pandas>=2.2.3,
+    streamlit>=1.44.1
