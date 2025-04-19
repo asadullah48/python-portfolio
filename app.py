@@ -629,7 +629,7 @@ def show_project_details(project):
     screenshot_cols = st.columns(len(screenshots))
     for idx, img in enumerate(screenshots):
         with screenshot_cols[idx]:
-            st.image(img, caption=f"Screenshot {idx+1}", use_column_width=True)
+            st.image(img, caption=f"Screenshot {idx+1}", use_container_width=True)
     
     # Add tabs for more project details
     tabs = st.tabs(["✨ Features", "🎮 Demo", "💬 Feedback", "📚 Documentation"])
