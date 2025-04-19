@@ -1,0 +1,13 @@
+[project]
+name = "weather-program-python-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "python-dotenv>=1.1.0",
+    "pytz>=2025.2",
+    "requests>=2.32.3",
+    "streamlit>=1.44.1",
+    "streamlit-lottie>=0.0.5",
+]
