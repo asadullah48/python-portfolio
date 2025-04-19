@@ -1,0 +1,12 @@
+[project]
+name = "password-generator-python-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.10.1",
+    "numpy>=2.2.4",
+    "pyperclip>=1.9.0",
+    "streamlit>=1.44.1",
+]
