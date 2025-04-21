@@ -808,8 +808,8 @@ def main():
         # Quick links
         st.markdown("## 🔗 Quick Links")
         st.markdown("[🐙 GitHub](https://github.com/asadullah48)")
-        st.markdown("[💼 LinkedIn](https://linkedin.com/in/asadullah48)")
-        st.markdown("[📝 Blog](https://medium.com/@asadullah48)")
+        st.markdown("[💼 LinkedIn](https://www.linkedin.com/in/asadullah-shafique-a00679325/)")
+        st.markdown("[📝 Blog](https://medium.com/@texcotembroiderysourcinghouse")
         
         st.markdown("---")
         
