@@ -469,8 +469,8 @@ def guess_number():
         "difficulty": "Intermediate",
         "key_features": ["HTML parsing", "Data extraction", "Automated browsing"],
         "image": "web_scraping.png",
-        "github_link": "https://github.com/asadullah48/web-scraper",
-        "streamlit_link": "https://web-scraper-asadullah.streamlit.app/",
+        "github_link": "https://github.com/asadullah48/github-profile-explorer",
+        "streamlit_link": "https://explorergithu.streamlit.app/",
         "tech_stack": ["Python", "BeautifulSoup", "Requests", "Pandas"],
         "completion_date": "2023-11-20",
         "testimonial": "My first project dealing with real-world data extraction!"
