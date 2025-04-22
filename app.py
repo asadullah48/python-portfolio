@@ -1025,10 +1025,7 @@ def main():
                                 if st.button(f"View Details", key=f"btn_{project['id']}"):
                                     st.session_state.selected_project = project["id"]
                                     st.session_state.show_project_details = True
-                                if st.session_state.get('show_project_details'):
-                                    show_project_details()
-                                else:
-                                    st.session_state.show_main_content()
+                                    st.rerun()
                             with col2:
                                 if st.button(fav_status, key=f"fav_list_{project['id']}"):
                                     toggle_favorite(project["id"])
