@@ -226,7 +226,7 @@ def create_number_guessing_app():
                 st.session_state.current_guess = st.session_state.guesser.make_guess()
                 st.session_state.message = ""
                 st.session_state.start_time = time.time()
-                st.experimental_rerun()
+                st.rerun()
                 
         with col2:
             if st.button("❓ Get a Hint", use_container_width=True):
@@ -310,7 +310,7 @@ def create_number_guessing_app():
                 else:
                     st.session_state.message = "🤨 I detect inconsistent feedback. Let's restart."
                     st.session_state.game_active = False
-                st.experimental_rerun()
+                st.rerun()
         
         with col2:
             if st.button("👇 Lower", use_container_width=True, help="Click if your number is lower than my guess"):
@@ -323,7 +323,7 @@ def create_number_guessing_app():
                 else:
                     st.session_state.message = "🤨 I detect inconsistent feedback. Let's restart."
                     st.session_state.game_active = False
-                st.experimental_rerun()
+                st.rerun()
         
         with col3:
             if st.button("✅ Correct!", use_container_width=True, help="Click if I guessed correctly"):
@@ -371,14 +371,14 @@ def create_number_guessing_app():
                 # Animate success
                 animate_success()
                 st.balloons()
-                st.experimental_rerun()
+                st.rerun()
         
         # End current game
         if st.button("🛑 End Game", use_container_width=True):
             st.session_state.game_active = False
             st.session_state.games_played += 1
             st.session_state.message = "Game ended. Thanks for playing!"
-            st.experimental_rerun()
+            st.rerun()
 
 if __name__ == "__main__":
     create_number_guessing_app()
