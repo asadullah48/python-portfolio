@@ -1,0 +1,144 @@
+/* Custom CSS for Python Image Editor */
+
+/* Main page styling */
+.main {
+    background-color: #f5f7f9;
+    padding: 1rem;
+}
+
+/* Custom background gradient */
+.stApp {
+    background: linear-gradient(135deg, #f5f7f9 0%, #e0e5ec 100%);
+}
+
+/* Card-like containers */
+.css-1r6slb0, .css-12oz5g7 {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 10px !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Header styling */
+h1, h2, h3 {
+    color: #1e3a8a !important;
+    font-weight: 600 !important;
+}
+
+/* Button styling */
+.stButton > button {
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid rgba(49, 51, 63, 0.2) !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Filter button styling */
+.filter-button {
+    width: 100% !important;
+    margin-bottom: 0.5rem !important;
+    background-color: #f0f4f8 !important;
+}
+
+/* Slider styling */
+.stSlider > div > div {
+    color: #1e3a8a !important;
+}
+
+/* File uploader styling */
+.stFileUploader > div {
+    border-radius: 10px !important;
+    border: 2px dashed #1e3a8a !important;
+    padding: 2rem !important;
+}
+
+/* Image container styling */
+.image-container {
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Tabs styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px !important;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 40px !important;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 0 16px !important;
+    background-color: #f0f4f8 !important;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #1e3a8a !important;
+    color: white !important;
+}
+
+/* History item styling */
+.history-item {
+    padding: 8px !important;
+    border-radius: 4px !important;
+    background-color: #f0f4f8 !important;
+    margin-bottom: 4px !important;
+}
+
+/* Footer styling */
+footer {
+    border-top: 1px solid #e0e5ec !important;
+    padding-top: 1rem !important;
+    margin-top: 2rem !important;
+    color: #64748b !important;
+}
+
+/* Tooltip styling */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #1e3a8a;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Animation for page transitions */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stButton > button {
+        width: 100% !important;
+    }
+}
