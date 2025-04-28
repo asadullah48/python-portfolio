@@ -4,16 +4,32 @@ from PIL import Image
 import io
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import random
 import os
+import glob
 from datetime import datetime
+import time
+import numpy as np
+from pathlib import Path
+import re
+import json
+import requests
+from streamlit_lottie import st_lottie
+from streamlit_option_menu import option_menu
+from streamlit_particles import particles
 
 # Page configuration
 st.set_page_config(
     page_title="Asadullah's Python Portfolio",
     page_icon="🐍",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://github.com/asadullah48',
+        'Report a bug': 'https://github.com/asadullah48',
+        'About': "# Asadullah's Python Portfolio\nA showcase of 25 Python projects built with Streamlit."
+    }
 )
 
 # Custom CSS with improved styling, dark mode support, and animations
@@ -30,7 +46,7 @@ st.markdown("""
         --header-bg: #f0f2f6;
         --accent-color: #FF5722;
     }
-    
+
     /* Dark mode styles */
     .dark-mode {
         --background-color: #121212;
@@ -42,13 +58,13 @@ st.markdown("""
         --header-bg: #1a1a1a;
         --accent-color: #FF7043;
     }
-    
+
     body {
         color: var(--text-color);
         background-color: var(--background-color);
         transition: all 0.3s ease;
     }
-    
+
     .project-card {
         background-color: var(--card-bg-color);
         border-radius: 12px;
@@ -62,12 +78,12 @@ st.markdown("""
         flex-direction: column;
         position: relative;
     }
-    
+
     .project-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 12px 24px rgba(0,0,0,0.15);
     }
-    
+
     .category-label {
         background-color: var(--primary-color);
         color: white;
@@ -78,19 +94,19 @@ st.markdown("""
         display: inline-block;
         margin-bottom: 6px;
     }
-    
+
     .difficulty-beginner {
         background-color: #4CAF50;
     }
-    
+
     .difficulty-intermediate {
         background-color: #FF9800;
     }
-    
+
     .difficulty-advanced {
         background-color: #F44336;
     }
-    
+
     .header-container {
         text-align: center;
         padding: 30px;
@@ -100,25 +116,25 @@ st.markdown("""
         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         animation: fadeIn 1s ease-in;
     }
-    
+
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    
+
     .project-count {
         font-size: 1.5em;
         color: var(--primary-color);
         font-weight: bold;
         margin: 15px 0;
     }
-    
+
     .success-message {
         font-style: italic;
         color: var(--secondary-color);
         font-size: 1.1em;
     }
-    
+
     .view-details-btn {
         background-color: var(--primary-color);
         color: white;
@@ -129,34 +145,34 @@ st.markdown("""
         margin-top: auto;
         transition: background-color 0.3s ease;
     }
-    
+
     .view-details-btn:hover {
         background-color: var(--secondary-color);
     }
-    
+
     .search-box {
         border-radius: 30px !important;
         border: var(--card-border) !important;
         padding: 10px 20px !important;
     }
-    
+
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
     }
-    
+
     .stTabs [data-baseweb="tab"] {
         border-radius: 4px 4px 0px 0px;
         padding: 10px 16px;
         background-color: var(--card-bg-color);
     }
-    
+
     .social-icons {
         font-size: 24px;
         margin: 0 10px;
         color: var(--primary-color);
         text-decoration: none;
     }
-    
+
     .github-stats {
         background-color: var(--card-bg-color);
         padding: 15px;
@@ -164,7 +180,7 @@ st.markdown("""
         border: var(--card-border);
         margin-bottom: 20px;
     }
-    
+
     /* Favorite button styles */
     .favorite-btn {
         background: none;
@@ -176,7 +192,7 @@ st.markdown("""
         top: 10px;
         right: 10px;
     }
-    
+
     /* Screenshot gallery styles */
     .screenshot-gallery {
         display: flex;
@@ -185,18 +201,18 @@ st.markdown("""
         gap: 10px;
         margin: 15px 0;
     }
-    
+
     .screenshot-img {
         max-height: 200px;
         border-radius: 8px;
         border: var(--card-border);
         transition: transform 0.2s ease;
     }
-    
+
     .screenshot-img:hover {
         transform: scale(1.05);
     }
-    
+
     /* Tech stack pill */
     .tech-pill {
         background-color: var(--accent-color);
@@ -207,7 +223,7 @@ st.markdown("""
         margin-right: 5px;
         display: inline-block;
     }
-    
+
     /* Project stats */
     .stats-card {
         background-color: var(--card-bg-color);
@@ -217,7 +233,7 @@ st.markdown("""
         margin-bottom: 15px;
         border: var(--card-border);
     }
-    
+
     /* Demo section */
     .demo-section {
         background-color: rgba(0, 0, 0, 0.03);
@@ -225,19 +241,19 @@ st.markdown("""
         padding: 15px;
         margin: 10px 0;
     }
-    
+
     /* Timeline */
     .timeline-container {
         position: relative;
         padding-left: 30px;
         margin-bottom: 20px;
     }
-    
+
     .timeline-item {
         position: relative;
         padding-bottom: 15px;
     }
-    
+
     .timeline-item:before {
         content: '';
         position: absolute;
@@ -248,7 +264,7 @@ st.markdown("""
         border-radius: 50%;
         background-color: var(--primary-color);
     }
-    
+
     .timeline-item:after {
         content: '';
         position: absolute;
@@ -258,35 +274,35 @@ st.markdown("""
         height: 100%;
         background-color: var(--primary-color);
     }
-    
+
     .timeline-item:last-child:after {
         display: none;
     }
-    
+
     /* Custom scrollbar */
     ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
     }
-    
+
     ::-webkit-scrollbar-track {
         background: var(--background-color);
     }
-    
+
     ::-webkit-scrollbar-thumb {
         background: var(--primary-color);
         border-radius: 4px;
     }
-    
+
     ::-webkit-scrollbar-thumb:hover {
         background: var(--secondary-color);
     }
-    
+
     /* Make sure emojis display at a reasonable size */
     .emoji {
         font-size: 1.5em;
     }
-    
+
     /* Deployment badge */
     .deployment-badge {
         background-color: #9C27B0;
@@ -297,13 +313,13 @@ st.markdown("""
         display: inline-block;
         margin: 5px 0;
     }
-    
+
     /* Animation for cards */
     @keyframes slideIn {
         from { opacity: 0; transform: translateX(-30px); }
         to { opacity: 1; transform: translateX(0); }
     }
-    
+
     .animated-card {
         animation: slideIn 0.5s ease-out;
     }
@@ -384,11 +400,11 @@ projects = [
 def guess_number():
     number = random.randint(1, 100)
     attempts = 0
-    
+
     while True:
         guess = int(input("Guess a number between 1 and 100: "))
         attempts += 1
-        
+
         if guess < number:
             print("Too low!")
         elif guess > number:
@@ -414,20 +430,20 @@ def guess_number():
     low = 1
     high = x
     feedback = ''
-    
+
     while feedback != 'c':
         if low != high:
             guess = random.randint(low, high)
         else:
             guess = low
-        
+
         feedback = input(f'Is {guess} too high (H), too low (L), or correct (C)? ').lower()
-        
+
         if feedback == 'h':
             high = guess - 1
         elif feedback == 'l':
             low = guess + 1
-    
+
     print(f'Yay! The computer guessed your number, {guess}, correctly!')"""
     },
     # Continue with other projects...
@@ -497,7 +513,7 @@ def get_project_screenshots(project_id):
     # In a real implementation, you would load actual images from a directory
     # such as f"screenshots/{project_id}/"
     num_screenshots = random.randint(2, 5)  # Simulating a random number of screenshots
-    return [get_placeholder_image(width=300, height=200, text=f"Screenshot {i+1} for Project {project_id}") 
+    return [get_placeholder_image(width=300, height=200, text=f"Screenshot {i+1} for Project {project_id}")
             for i in range(num_screenshots)]
 
 # Helper functions
@@ -511,11 +527,11 @@ def get_placeholder_image(width=300, height=200, text=""):
         (103, 58, 183),  # Purple
         (255, 109, 0)    # Orange
     ]
-    
+
     # Use the text to determine the color consistently
     color_index = sum(ord(c) for c in text) % len(colors) if text else random.randint(0, len(colors)-1)
     bg_color = colors[color_index]
-    
+
     # Create the image with the background color
     img = Image.new('RGB', (width, height), color=bg_color)
     return img
@@ -553,7 +569,7 @@ def format_date(date_str):
 # Function to display project details
 def show_project_details(project):
     st.markdown(f"# {project_emojis.get(project['category'], '📁')} {project['title']}")
-    
+
     # Category, difficulty, and deployment badge
     badges_col1, badges_col2, badges_col3 = st.columns([1, 1, 2])
     with badges_col1:
@@ -571,22 +587,22 @@ def show_project_details(project):
                 <span class="deployment-badge">🚀 Live Demo</span>
             </a>
             """, unsafe_allow_html=True)
-    
+
     # Project image and info in columns
     col1, col2 = st.columns([1, 2])
-    
+
     with col1:
         img = get_placeholder_image(text=project["title"])
         st.image(img, caption=f"Project #{project['id']}: {project['title']}")
-        
+
         # GitHub link button
         st.markdown(f"[View on GitHub 🔗]({project['github_link']})")
-        
+
         # Favorite button
         fav_status = "★ Remove from favorites" if project["id"] in st.session_state.favorites else "☆ Add to favorites"
         if st.button(fav_status, key=f"fav_{project['id']}"):
             toggle_favorite(project["id"])
-        
+
         # Tech stack
         if "tech_stack" in project:
             st.markdown("### 🔧 Tech Stack")
@@ -594,64 +610,64 @@ def show_project_details(project):
                 st.markdown(f"""
                 <span class="tech-pill">{tech_stacks.get(tech, '🔍')} {tech}</span>
                 """, unsafe_allow_html=True)
-        
+
         # Completion date
         if "completion_date" in project:
             st.markdown(f"**Completed on:** {format_date(project['completion_date'])}")
-    
+
     with col2:
         st.markdown(f"### 📝 Description")
         st.markdown(project["description"])
-        
+
         st.markdown("### ✨ Key Features")
         for feature in project["key_features"]:
             st.markdown(f"- {feature}")
-        
+
         # Show testimonial if available
         if "testimonial" in project:
             st.markdown("### 💬 User Feedback")
             st.info(f'"{project["testimonial"]}"')
-        
+
         # Code snippet if available
         if "code_snippet" in project:
             st.markdown("### 💻 Sample Code")
             st.code(project["code_snippet"], language="python")
-    
+
     # Screenshots gallery
     st.markdown("### 📸 Screenshots")
     screenshots = get_project_screenshots(project["id"])
-    
+
     # Display screenshots in a scrollable container
     st.markdown("""
     <div class="screenshot-gallery">
     """, unsafe_allow_html=True)
-    
+
     screenshot_cols = st.columns(len(screenshots))
     for idx, img in enumerate(screenshots):
         with screenshot_cols[idx]:
             st.image(img, caption=f"Screenshot {idx+1}", use_container_width=True)
-    
+
     # Add tabs for more project details
     tabs = st.tabs(["✨ Features", "🎮 Demo", "💬 Feedback", "📚 Documentation"])
-    
+
     with tabs[0]:
         st.markdown("### Detailed Features")
         st.markdown("""
         This project demonstrates the following concepts and techniques:
-        
+
         1. **Core Functionality**
            - Implementation of the main features
            - Error handling and edge cases
-           
+
         2. **Code Organization**
            - Modular code structure
            - Clean separation of concerns
-           
+
         3. **User Experience**
            - Intuitive interface
            - Clear feedback to user actions
         """)
-    
+
     with tabs[1]:
         st.markdown("### Interactive Demo")
         if "streamlit_link" in project:
@@ -668,7 +684,7 @@ def show_project_details(project):
             """, unsafe_allow_html=True)
         else:
             st.info("Demo coming soon! Check the GitHub repository for the latest updates.")
-    
+
     with tabs[2]:
         st.write("How would you rate this project?")
         col1, col2, col3, col4, col5 = st.columns(5)
@@ -682,11 +698,11 @@ def show_project_details(project):
             st.button("⭐⭐⭐⭐", key=f"rate4_{project['id']}")
         with col5:
             st.button("⭐⭐⭐⭐⭐", key=f"rate5_{project['id']}")
-        
+
         st.text_area("Leave a comment", key=f"comment_{project['id']}")
         if st.button("Submit Feedback", key=f"submit_{project['id']}"):
             st.success("Thank you for your feedback!")
-    
+
     with tabs[3]:
         st.markdown("### Documentation")
         st.markdown("""
@@ -696,19 +712,19 @@ def show_project_details(project):
         cd [project-directory]
         pip install -r requirements.txt
         ```
-        
+
         #### Usage
         ```bash
         streamlit run app.py
         ```
-        
+
         #### Configuration
         Customize the behavior by modifying settings in the `config.py` file.
-        
+
         #### Contributing
         Contributions are welcome! Please feel free to submit a Pull Request.
         """)
-    
+
     # Back button
     if st.button("← Back to Projects"):
         st.session_state.show_project_details = False
@@ -728,7 +744,7 @@ def get_project_categories():
 # Function to generate project stats
 def get_project_stats():
     total_projects = len(projects)
-    
+
     # Difficulty breakdown
     difficulty_counts = {}
     for project in projects:
@@ -736,7 +752,7 @@ def get_project_stats():
         if difficulty not in difficulty_counts:
             difficulty_counts[difficulty] = 0
         difficulty_counts[difficulty] += 1
-    
+
     # Category breakdown
     category_counts = {}
     for project in projects:
@@ -744,7 +760,7 @@ def get_project_stats():
         if category not in category_counts:
             category_counts[category] = 0
         category_counts[category] += 1
-    
+
     # Timeline data (based on completion dates if available)
     timeline_data = []
     for project in projects:
@@ -754,10 +770,10 @@ def get_project_stats():
                 "title": project["title"],
                 "date": project["completion_date"]
             })
-    
+
     # Sort by date
     timeline_data.sort(key=lambda x: x["date"])
-    
+
     # Tech stack usage
     tech_usage = {}
     for project in projects:
@@ -766,7 +782,7 @@ def get_project_stats():
                 if tech not in tech_usage:
                     tech_usage[tech] = 0
                 tech_usage[tech] += 1
-    
+
     return {
         "total": total_projects,
         "difficulties": difficulty_counts,
@@ -783,17 +799,17 @@ def main():
         if project:
             show_project_details(project)
             return
-    
+
     # Sidebar
     with st.sidebar:
         st.image(get_placeholder_image(200, 200, "Profile"), caption="Asadullah")
-        
+
         st.markdown("## 👨‍💻 About Me")
         st.markdown("""
-        Python developer with a passion for building useful applications. 
+        Python developer with a passion for building useful applications.
         Currently learning and growing at GIAIC (Gen AI program).
         """)
-        
+
         # Dark mode toggle
         if st.toggle("🌓 Dark Mode", key="toggle_dark_mode"):
             st.session_state.dark_mode = not st.session_state.dark_mode
@@ -802,17 +818,17 @@ def main():
                 document.body.classList.toggle('dark-mode');
             </script>
             """, unsafe_allow_html=True)
-        
+
         st.markdown("---")
-        
+
         # Quick links
         st.markdown("## 🔗 Quick Links")
         st.markdown("[🐙 GitHub](https://github.com/asadullah48)")
         st.markdown("[💼 LinkedIn](https://www.linkedin.com/in/asadullah-shafique-a00679325/)")
         st.markdown("[📝 Blog](https://medium.com/@texcotembroiderysourcinghouse")
-        
+
         st.markdown("---")
-        
+
         # Skills section
         st.markdown("## 🛠️ Skills")
         skills = {
@@ -822,13 +838,13 @@ def main():
             "Machine Learning": 65,
             "UI/UX Design": 60
         }
-        
+
         for skill, level in skills.items():
             st.markdown(f"**{skill}**")
             st.progress(level/100)
-        
+
         st.markdown("---")
-        
+
         # Show favorites
         # ... inside the sidebar ...
         if st.session_state.favorites:
@@ -837,7 +853,7 @@ def main():
                 project = next((p for p in projects if p["id"] == project_id), None)
                 if project:
                     # Corrected: Removed the duplicate/incomplete 'if' statement above
-                    if st.button(f"🔖 {project['title']}", key=f"fav_sidebar_{project_id}"): 
+                    if st.button(f"🔖 {project['title']}", key=f"fav_sidebar_{project_id}"):
                         st.session_state.selected_project = project_id
                         st.session_state.show_project_details = True
                         st.experimental_rerun()
@@ -849,7 +865,7 @@ def main():
             document.body.classList.add('dark-mode');
         </script>
         """, unsafe_allow_html=True)
-    
+
     # Header
     st.markdown("""
     <div class="header-container">
@@ -858,26 +874,26 @@ def main():
         <p class="success-message">From beginner to advanced, a journey through Python development</p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     # About section
     st.markdown("## 🌟 About My Journey")
     st.write("""
-    Welcome to my portfolio of 25 Python projects built with Streamlit! This collection represents my growth 
-    as a developer, from simple console games to complex AI applications. Each project has been a stepping stone 
+    Welcome to my portfolio of 25 Python projects built with Streamlit! This collection represents my growth
+    as a developer, from simple console games to complex AI applications. Each project has been a stepping stone
     in my learning journey, challenging me to expand my skills and explore new technologies.
-    
-    I'm grateful to my mentors at GIAIC - Sir Zia, Sir Arif Karim, and Sir Ameen Alam - for their guidance 
-    and to my fellow students for their support and collaborative spirit. This portfolio is a testament to what 
+
+    I'm grateful to my mentors at GIAIC - Sir Zia, Sir Arif Karim, and Sir Ameen Alam - for their guidance
+    and to my fellow students for their support and collaborative spirit. This portfolio is a testament to what
     can be achieved through consistent learning and practice.
-    
-    Feel free to explore my projects, check out their GitHub repositories, and reach out if you'd like to 
+
+    Feel free to explore my projects, check out their GitHub repositories, and reach out if you'd like to
     connect or collaborate!
     """)
-    
+
     # Project Stats Overview
     stats = get_project_stats()
     st.markdown("## 📊 Portfolio Overview")
-    
+
     # Stats cards in columns
     stat_cols = st.columns(4)
     with stat_cols[0]:
@@ -887,7 +903,7 @@ def main():
             <p style="margin: 0;">Total Projects</p>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with stat_cols[1]:
         st.markdown(f"""
         <div class="stats-card">
@@ -895,7 +911,7 @@ def main():
             <p style="margin: 0;">Beginner Projects</p>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with stat_cols[2]:
         st.markdown(f"""
         <div class="stats-card">
@@ -903,7 +919,7 @@ def main():
             <p style="margin: 0;">Intermediate Projects</p>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with stat_cols[3]:
         st.markdown(f"""
         <div class="stats-card">
@@ -911,15 +927,15 @@ def main():
             <p style="margin: 0;">Advanced Projects</p>
         </div>
         """, unsafe_allow_html=True)
-    
+
     # Search and Filters
     st.markdown("## 🔍 Explore Projects")
-    
+
     col1, col2, col3 = st.columns([2, 1, 1])
-    
+
     with col1:
         search_query = st.text_input("Search Projects", placeholder="Enter keywords...", key="search")
-    
+
     with col2:
         categories = ["All"] + sorted(list(set(p["category"] for p in projects)))
         category_filter = st.multiselect(
@@ -927,60 +943,60 @@ def main():
             options=categories[1:],
             default=[]
         )
-    
+
     with col3:
         difficulty_filter = st.multiselect(
             "Filter by Difficulty",
             options=["Beginner", "Intermediate", "Advanced"],
             default=[]
         )
-    
+
     # Apply filters
     filtered_projects = projects
-    
+
     # Search filter
     if search_query:
-        filtered_projects = [p for p in filtered_projects if 
-                            search_query.lower() in p["title"].lower() or 
+        filtered_projects = [p for p in filtered_projects if
+                            search_query.lower() in p["title"].lower() or
                             search_query.lower() in p["description"].lower() or
                             any(search_query.lower() in feature.lower() for feature in p["key_features"])]
-    
+
     # Category filter
     if category_filter:
         filtered_projects = [p for p in filtered_projects if p["category"] in category_filter]
-    
+
     # Difficulty filter
     if difficulty_filter:
         filtered_projects = [p for p in filtered_projects if p["difficulty"] in difficulty_filter]
-    
+
     # View tabs
     view_tabs = st.tabs(["📱 Card View", "📋 List View", "📊 Stats", "📆 Timeline"])
-    
+
     # Card View
     with view_tabs[0]:
         # Display projects in grid
         st.markdown(f"### Projects ({len(filtered_projects)})")
-        
+
         # Show featured project if no filters
         if not search_query and not category_filter and not difficulty_filter:
             featured_project = next((p for p in projects if p["id"] == 13), projects[0])  # Sudoku Solver or first project
             st.markdown("#### ✨ Featured Project")
             with st.container():
                 col1, col2 = st.columns([1, 2])
-                
+
                 with col1:
                     img = get_placeholder_image(text=featured_project["title"])
                     st.image(img, caption=f"Featured: {featured_project['title']}")
-                
+
                 with col2:
                     st.markdown(f"### {project_emojis.get(featured_project['category'], '📁')} {featured_project['title']}")
-                    
+
                     # Category and difficulty badges
                     st.markdown(f"""
                     <span class="category-label">{featured_project['category']}</span>
                     <span class="category-label {get_difficulty_color(featured_project['difficulty'])}">{featured_project['difficulty']}</span>
                     """, unsafe_allow_html=True)
-                    
+
                     # Show streamlit link badge if available
                     if "streamlit_link" in featured_project:
                         st.markdown(f"""
@@ -988,17 +1004,17 @@ def main():
                             <span class="deployment-badge">🚀 Live Demo</span>
                         </a>
                         """, unsafe_allow_html=True)
-                    
+
                     st.markdown(featured_project["description"])
-                    
+
                     # View details button
                     if st.button("View Details", key=f"featured_btn"):
                         st.session_state.selected_project = featured_project["id"]
                         st.session_state.show_project_details = True
                         st.experimental_rerun()
-            
+
             st.markdown("---")
-        
+
         # Create rows with 3 columns each
         for i in range(0, len(filtered_projects), 3):
             cols = st.columns(3)
@@ -1009,7 +1025,7 @@ def main():
                         with st.container():
                             # Favorite status
                             fav_status = "★" if project["id"] in st.session_state.favorites else "☆"
-                            
+
                             st.markdown(f"""
                             <div class="project-card animated-card">
                                 <h3>{project_emojis.get(project['category'], '📁')} {project['title']}</h3>
@@ -1019,7 +1035,7 @@ def main():
                                 <p>{project['description'][:100]}{'...' if len(project['description']) > 100 else ''}</p>
                             </div>
                             """, unsafe_allow_html=True)
-                            
+
                             col1, col2 = st.columns([3, 1])
                             with col1:
                                 if st.button(f"View Details", key=f"btn_{project['id']}"):
@@ -1029,7 +1045,7 @@ def main():
                             with col2:
                                 if st.button(fav_status, key=f"fav_list_{project['id']}"):
                                     toggle_favorite(project["id"])
-    
+
     # List View
     with view_tabs[1]:
         for project in filtered_projects:
@@ -1038,24 +1054,24 @@ def main():
                 with cols[0]:
                     img = get_placeholder_image(100, 100, project["title"])
                     st.image(img)
-                
+
                 with cols[1]:
                     st.markdown(f"### {project_emojis.get(project['category'], '📁')} {project['title']}")
-                    
+
                     # Category and difficulty badges in one line
                     st.markdown(f"""
                     <span class="category-label">{project['category']}</span>
                     <span class="category-label {get_difficulty_color(project['difficulty'])}">{project['difficulty']}</span>
                     {"<span class='deployment-badge'>🚀 Live Demo</span>" if "streamlit_link" in project else ""}
                     """, unsafe_allow_html=True)
-                    
+
                     st.markdown(project["description"])
-                    
+
                     # Tech stack if available
                     if "tech_stack" in project:
                         tech_stack = ", ".join([f"{tech_stacks.get(tech, '🔍')} {tech}" for tech in project["tech_stack"]])
                         st.markdown(f"**Tech:** {tech_stack}")
-                    
+
                     col1, col2, col3 = st.columns([3, 1, 1])
                     with col1:
                         if st.button(f"View Details", key=f"list_btn_{project['id']}"):
@@ -1068,14 +1084,14 @@ def main():
                         fav_status = "★ Favorite" if project["id"] in st.session_state.favorites else "☆ Add to favorites"
                         if st.button(fav_status, key=f"list_fav_{project['id']}"):
                             toggle_favorite(project["id"])
-            
+
             st.markdown("---")
-    
+
     # Stats View
     with view_tabs[2]:
         # Create category and difficulty distribution charts
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.markdown("### Projects by Category")
             # Create DataFrame for category chart
@@ -1083,17 +1099,17 @@ def main():
                 'Category': list(stats['categories'].keys()),
                 'Count': list(stats['categories'].values())
             })
-            
+
             fig = px.pie(
-                category_df, 
-                values='Count', 
+                category_df,
+                values='Count',
                 names='Category',
                 color_discrete_sequence=px.colors.qualitative.Set3,
                 hole=0.4
             )
             fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
             st.plotly_chart(fig, use_container_width=True)
-        
+
         with col2:
             st.markdown("### Projects by Difficulty")
             # Create DataFrame for difficulty chart
@@ -1101,16 +1117,16 @@ def main():
                 'Difficulty': list(stats['difficulties'].keys()),
                 'Count': list(stats['difficulties'].values())
             })
-            
+
             # Set custom colors for difficulties
             difficulty_colors = {
                 'Beginner': '#4CAF50',
                 'Intermediate': '#FF9800',
                 'Advanced': '#F44336'
             }
-            
+
             color_map = {diff: difficulty_colors.get(diff, '#CCCCCC') for diff in difficulty_df['Difficulty']}
-            
+
             fig = px.bar(
                 difficulty_df,
                 x='Difficulty',
@@ -1120,16 +1136,16 @@ def main():
             )
             fig.update_layout(margin=dict(t=0, b=0, l=0, r=0))
             st.plotly_chart(fig, use_container_width=True)
-        
+
         # Tech stack usage chart
         st.markdown("### Technology Usage")
-        
+
         if stats['tech_usage']:
             tech_df = pd.DataFrame({
                 'Technology': list(stats['tech_usage'].keys()),
                 'Projects': list(stats['tech_usage'].values())
             }).sort_values('Projects', ascending=False)
-            
+
             fig = px.bar(
                 tech_df,
                 x='Technology',
@@ -1141,14 +1157,14 @@ def main():
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.info("Tech stack data not available for analysis.")
-    
+
     # Timeline View
     with view_tabs[3]:
         st.markdown("### Project Development Timeline")
-        
+
         if stats['timeline']:
             timeline_data_sorted = sorted(stats['timeline'], key=lambda x: x['date'])
-            
+
             for item in timeline_data_sorted:
                 project = next((p for p in projects if p["id"] == item["id"]), None)
                 if project:
@@ -1160,22 +1176,22 @@ def main():
                     """, unsafe_allow_html=True)
         else:
             st.info("Timeline data not available.")
-        
+
         # Add a chart showing project completion over time
         if stats['timeline']:
             # Create a dataframe with dates and cumulative project count
             dates = [item['date'] for item in stats['timeline']]
             dates.sort()
-            
+
             timeline_df = pd.DataFrame({
                 'Date': dates,
                 'Project': range(1, len(dates) + 1)
             })
-            
+
             st.markdown("### Growth Over Time")
             fig = px.line(
-                timeline_df, 
-                x='Date', 
+                timeline_df,
+                x='Date',
                 y='Project',
                 markers=True,
                 title='Cumulative Projects Completed'
