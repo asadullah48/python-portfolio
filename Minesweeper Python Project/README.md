@@ -1,8 +1,8 @@
-# 💣 Minesweeper Game
+# 💣 Minesweeper Pro
 
 ![Minesweeper Banner](https://minesweepergame.streamlit.app/)
 
-A modern implementation of the classic Minesweeper game with both command-line and web-based interfaces using Streamlit.
+A modern, enhanced implementation of the classic Minesweeper game with both command-line and web-based interfaces using Streamlit. Now with improved UI/UX, professional styling, and additional features!
 
 ## 🎮 Features
 
@@ -18,11 +18,20 @@ A modern implementation of the classic Minesweeper game with both command-line a
   - Emoji-based interface (💣, 🚩, etc.)
   - Timer and move counter
   - Interactive grid-based UI in Streamlit
+  - Color-coded numbers for better readability
+  - Custom CSS styling for a professional look
+  - Background image customization (online URLs or local files)
+  - Preset background options for quick customization
+  - Responsive design for different screen sizes
+  - Improved game statistics dashboard
 
 ## 📋 Requirements
 
 - Python 3.6+
-- Streamlit (`uv add streamlit`)
+- Streamlit (`pip install streamlit` or `uv add streamlit`)
+- Pillow for image processing
+- NumPy for array operations
+- Streamlit-extras for enhanced components
 
 ## 🚀 Installation & Usage
 
@@ -47,6 +56,15 @@ A modern implementation of the classic Minesweeper game with both command-line a
    streamlit run minesweeper_app.py
    ```
 
+5. Run the Enhanced Minesweeper Pro version:
+   ```bash
+   python run_enhanced_minesweeper.py
+   ```
+   or
+   ```bash
+   streamlit run enhanced_minesweeper.py
+   ```
+
 ## 💻 Command-line Usage
 
 ```
@@ -64,6 +82,20 @@ The Streamlit app provides an intuitive interface where you can:
 - Toggle between reveal and flag modes
 - Track your progress with a timer and move counter
 
+### Enhanced Version Features
+The enhanced Minesweeper Pro version includes:
+- Professional UI with custom styling
+- Background image customization:
+  - Use online image URLs
+  - Use local image files from your computer
+  - Choose from preset background options
+- Color-coded numbers for easier gameplay
+- Improved game statistics dashboard
+- Responsive design for different screen sizes
+- Better difficulty presets (Beginner, Intermediate, Expert)
+- Detailed instructions and tips in the sidebar
+- Celebration animations when you win
+
 ## 📝 Commit History
 
 - 🎮 Initial game implementation
@@ -73,13 +105,21 @@ The Streamlit app provides an intuitive interface where you can:
 - 📊 Added game statistics tracking
 - 🔄 Improved game reset functionality
 - 📚 Added documentation and README
+- 🎨 Enhanced UI with professional styling
+- 🖼️ Added background image support
+- 🎯 Improved difficulty presets
+- 🎉 Added celebration animations
+- 📱 Made design responsive
 
 ## 🛠️ Development Roadmap
 
 - [ ] Add sound effects
 - [ ] Implement leaderboard functionality
-- [ ] Add themes and customization options
+- [ ] Add more themes and customization options
 - [ ] Create a mobile-friendly version
+- [ ] Add user accounts and save game progress
+- [ ] Implement multiplayer functionality
+- [ ] Create a dark mode option
 
 ## 👨‍💻 Author
 
@@ -87,4 +127,4 @@ The Streamlit app provides an intuitive interface where you can:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details."# minesweeper" 
+This project is licensed under the MIT License - see the LICENSE file for details."# minesweeper"
