@@ -7,7 +7,7 @@ This project implements the classic Rock, Paper, Scissors game where the user pl
 
 A modern, interactive implementation of the classic Rock Paper Scissors game built with Python and Streamlit.
 
-![Rock Paper Scissors Demo](https://github.com/asadullah48/rock-paper-scissors/raw/main/demo.png)
+![Rock Paper Scissors Demo](./demo.png)
 
 ## ✨ Features
 
@@ -19,7 +19,7 @@ A modern, interactive implementation of the classic Rock Paper Scissors game bui
 
 ## 🚀 Live Demo
 
-Check out the live demo: [Rock Paper Scissors Game](https://rock-paper-scissors-asadullah48.streamlit.app/)
+Check out the live demo: [Rock Paper Scissors Game](https://rockpaperapp.streamlit.app/)
 
 ## 🛠️ Installation
 
