@@ -1,148 +1,155 @@
 # 🎮 Connect Four Game
 
-![Connect Four Screenshot]
-./assets/screenshot.png
+<div align="center">
 
-A Python implementation of the classic Connect Four game using Pygame, with Streamlit deployment option.
+![Connect Four Game](./assets/images/game-banner.png)
 
-# 🎮 Connect Four Game
+[![Game](https://img.shields.io/badge/Game-Connect%20Four-blue?style=for-the-badge)](https://github.com/yourusername/connect-four)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.44+-red?style=for-the-badge)](https://streamlit.io)
+[![Python](https://img.shields.io/badge/Python-3.13+-green?style=for-the-badge)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-![Connect Four Game](https://img.shields.io/badge/Game-Connect%20Four-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red)
-![Python](https://img.shields.io/badge/Python-3.7+-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+</div>
 
-A classic Connect Four game with both web-based (Streamlit) and command-line interface (CLI) versions.
+A modern implementation of the classic Connect Four game featuring both web-based (Streamlit) and command-line interfaces, with an enhanced user experience and sleek design.
 
-![Game Screenshot](https://via.placeholder.com/800x400?text=Connect+Four+Game)
+## 📸 Screenshots
 
-## 🚀 Features
+<div align="center">
+  <img src="./assets/images/gameplay.png" alt="Gameplay Screenshot" width="600"/>
+  <p><em>Main gameplay screen with modern UI</em></p>
+  
+  <img src="./assets/images/winning-moment.png" alt="Winning Moment" width="600"/>
+  <p><em>Victory celebration screen</em></p>
+</div>
 
-- 🎲 Classic Connect Four gameplay
-- 🖥️ Two game modes:
-  - Web application built with Streamlit
-  - Command-line interface for terminal play
-- 🎨 Visually appealing game board
-- 🏆 Win detection for horizontal, vertical, and diagonal connections
-- 🤝 Draw detection when the board is full
-- 🔄 Easy game reset functionality
-- 📱 Responsive design for the web version
+## ✨ Features
 
-## 🛠️ Installation
+- 🎨 **Modern UI Design**
+  - Sleek gradient backgrounds
+  - Smooth animations
+  - Responsive layout
+  - Glass-morphism effects
 
-1. Clone this repository:
+- 🎮 **Game Modes**
+  - Web application (Streamlit)
+  - Command-line interface
+  - Player vs Player
+  - Player vs AI (Coming Soon)
+
+- 🏆 **Game Features**
+  - Win detection (horizontal, vertical, diagonal)
+  - Draw detection
+  - Move validation
+  - Game statistics tracking
+  - Easy reset functionality
+
+- 📊 **Statistics & History**
+  - Game duration tracking
+  - Move counting
+  - Win/loss records
+  - SQLite database integration
+
+## 🚀 Quick Start
+
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/asadullah48/connect-four-game.git
-   cd connect-four-game
+   git clone https://github.com/yourusername/connect-four.git
+   cd connect-four
    ```
 
-2. Create a virtual environment (optional but recommended):
+2. **Set up virtual environment**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. Install the required packages:
+3. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
+4. **Run the game**
+   - Web Version:
+     ```bash
+     streamlit run app.py
+     ```
+   - CLI Version:
+     ```bash
+     python connect_four.py
+     ```
+
 ## 🎯 How to Play
 
-### Web Version (Streamlit)
+1. **Web Version**
+   - Open your browser to the displayed URL (usually http://localhost:8501)
+   - Click column buttons to drop pieces
+   - First to connect four in any direction wins!
 
-1. Run the Streamlit app:
-   ```bash
-   streamlit run app.py
-   ```
+2. **CLI Version**
+   - Enter column numbers (1-7) to drop pieces
+   - Follow the on-screen instructions
+   - Type 'quit' to exit
 
-2. Open your browser and navigate to the URL displayed in the terminal (usually http://localhost:8501)
+## 🛠️ Technical Details
 
-3. Click on column buttons (1-7) to drop your pieces and try to connect four in a row!
-
-### CLI Version
-
-1. Run the CLI version directly:
-   ```bash
-   python connect-four.py
-   ```
-
-2. Follow the on-screen instructions to play in your terminal
-
-### Game Rules
-
-- Players take turns dropping colored discs into the board
-- Red always goes first, followed by Yellow
-- The first player to connect 4 discs in a row (horizontally, vertically, or diagonally) wins
-- If the board fills up without a winner, the game is a draw
-
-## 📋 Requirements
-
-The following dependencies are required:
+### Architecture
 
 ```
-streamlit>=1.28.0
-pygame>=2.1.0
-numpy>=1.22.0
-pillow>=9.0.0
+connect-four/
+├── app.py                 # Streamlit web interface
+├── connect_four.py        # Core game logic
+├── ai_player.py          # AI opponent (WIP)
+├── sound_manager.py      # Sound effects
+├── logger.py             # Logging system
+└── tests/               # Test suite
 ```
 
-Note: The CLI version only requires numpy and can run without the other dependencies.
+### Technologies Used
 
-## 🚀 Deployment
+- **Frontend**: Streamlit, Custom CSS
+- **Backend**: Python 3.13+
+- **Database**: SQLite
+- **Testing**: pytest
+- **Graphics**: Pygame
+- **CI/CD**: GitHub Actions
 
-### Web Version
+## 📊 Database Schema
 
-The Streamlit version can be deployed to Streamlit Cloud for free:
-
-1. Push your code to GitHub
-2. Visit [Streamlit Cloud](https://streamlit.io/cloud)
-3. Connect your GitHub repository
-4. Select the main file (app.py)
-5. Click "Deploy"
-
-### CLI Version
-
-The CLI version can be run on any system with Python 3.7+ and NumPy installed. It doesn't require any web deployment.
-
-## 🧠 How It Works
-
-Both versions share the same core game logic:
-
-1. A game board is represented as a 6x7 grid (rows x columns)
-2. Players take turns selecting columns to drop their pieces
-3. Gravity pulls pieces to the lowest available position in a column
-4. The game checks for winning connections after each move
-5. When a win or draw is detected, the game ends
-
-The web version uses:
-- **Streamlit** for the interface and interactive elements
-- **Pygame** for rendering the game board
-- **PIL/Pillow** for image processing
-
-The CLI version uses:
-- **NumPy** for board state management
-- **ANSI color codes** for colored terminal output
+```sql
+CREATE TABLE game_stats (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player1_name TEXT NOT NULL,
+    player2_name TEXT NOT NULL,
+    winner INTEGER NOT NULL,
+    moves_count INTEGER NOT NULL,
+    duration_seconds INTEGER NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## 📝 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👤 Author
 
-**Asadullah**
-- GitHub: [@asadullah48](https://github.com/asadullah48)
+**Your Name**
+- GitHub: [@yourusername](https://github.com/yourusername)
+- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourusername)
 
 ---
 
+<div align="center">
+  Made with ❤️ and Python
 Enjoy the game! 🎮

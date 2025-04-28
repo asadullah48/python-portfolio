@@ -10,8 +10,8 @@ import time
 import numpy as np
 
 # Game constants
-ROW_COUNT = 6
-COL_COUNT = 7
+ROW_COUNT = 5  # Reduced from 6
+COL_COUNT = 6  # Reduced from 7
 
 # ANSI color codes for terminal output
 class Colors:
@@ -206,3 +206,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
