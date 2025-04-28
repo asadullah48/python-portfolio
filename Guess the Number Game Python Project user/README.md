@@ -7,12 +7,12 @@
 
 A captivating interactive game where the computer reads your mind and guesses your secret number! Built with Streamlit and enhanced with beautiful visualizations.
 
-![Game Screenshot](https://raw.githubusercontent.com/streamlit/streamlit/develop/examples/streamlit_app_screenshot.png)
+![Game Screenshot](./Screenshot.png)
 
 ## 🎮 Play Online
 
 Try the game online at:
-[Mind Reader Game](https://asadullah48-mind-reader.streamlit.app/)
+[Mind Reader Game](https://mind-reader-game.streamlit.app/)
 
 ## ✨ Features
 
