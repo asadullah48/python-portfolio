@@ -9,7 +9,7 @@ A simple Python script to batch rename files in a directory with customizable pr
 
 We now have a Streamlit web interface! Try it:
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://your-streamlit-url.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://renamebulkfile.streamlit.app/)
 
 Or run locally:
 ```bash
