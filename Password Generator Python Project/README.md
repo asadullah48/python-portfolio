@@ -6,8 +6,7 @@
 
 A secure, feature-rich password generator with an intuitive Streamlit interface. Generate strong passwords with various complexity levels, check password strength, and more!
 
-![Password Generator Screenshot](https://raw.githubusercontent.com/asadullah48/secure-password-generator/main/screenshot.png)
-
+![./ssword Generator Screenshot](./Password%20Generator%20Screenshot/Screenshot%20.png)
 ## ✨ Features
 
 - **Multiple Complexity Levels**: Choose from low, medium, high, PIN, or memorable passwords
