@@ -1,17 +1,22 @@
-# 🏓 Multiplayer Pong Game
+# 🏓 Enhanced Multiplayer Pong Game
 
-A real-time multiplayer implementation of the classic Pong game using Python, Pygame, and socket programming.
+A real-time multiplayer implementation of the classic Pong game using Python, Pygame, and socket programming, with enhanced visuals, sound effects, and gameplay features.
 
-![Pong Game](https://user-images.githubusercontent.com/74038190/238200431-7d8f6f99-9c66-4fff-a9a6-534fb9d66d37.gif)
+![Pong Game](https://multiplayer-pong.streamlit.app/)
 
 ## ✨ Features
 
-- 🎮 Real-time multiplayer gameplay
-- 🌐 Client-server architecture
-- 🏆 Score tracking
-- 🎨 Smooth animations and graphics
-- 🔄 Automatic ball reset after scoring
-- 📱 Simple and intuitive controls
+- 🎮 Real-time multiplayer gameplay with customizable player names and paddle colors
+- 🌐 Robust client-server architecture with improved error handling
+- 🏆 Advanced score tracking with animations and particle effects
+- 🎨 Professional-grade graphics with smooth animations and visual effects
+- 🔊 Sound effects for game events (paddle hits, wall bounces, scoring)
+- 🎁 Power-up system with special abilities (speed boost, paddle size, etc.)
+- 📊 Statistics tracking and achievements system
+- 🖥️ Streamlit web interface for game configuration and statistics
+- � Responsive design with fullscreen support
+- �🔄 Automatic ball reset after scoring with visual feedback
+- 🎛️ Simple and intuitive controls with customizable settings
 
 ## 🚀 Getting Started
 
@@ -110,4 +115,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - Inspiration from the classic Atari Pong game
-- Thanks to the Pygame community for the excellent game development library"# multiplayer-pong" 
+- Thanks to the Pygame community for the excellent game development library"# multiplayer-pong"
