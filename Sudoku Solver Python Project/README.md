@@ -1,18 +1,33 @@
-# 🧩 Sudoku Solver & Game
+# 🧩 Sudoku Solver Pro
 
-A beautiful, interactive Sudoku game and solver built with Streamlit.
+A professional, feature-rich Sudoku game and solver built with Streamlit.
 
 ![Sudoku Screenshot](https://raw.githubusercontent.com/asadullah48/sudoku-solver/main/game.png)
 
 ## ✨ Features
 
-- 🎮 Interactive Sudoku game with four difficulty levels
-- 🎯 Real-time validation of moves
-- 💡 Hint system to help when you're stuck
-- ⏱️ Game timer to track your solving speed
-- 🔄 Reset and solve options
-- 📱 Responsive design that works on desktop and mobile
-- 🌈 Beautiful, clean UI
+### 🎮 Game Features
+- Interactive Sudoku game with four difficulty levels
+- Real-time validation of moves
+- Hint system to help when you're stuck
+- Game timer with pause functionality
+- Reset and solve options
+- Game history tracking
+- Difficulty rating display
+
+### 📝 Notes System
+- Manual notes mode for advanced solving techniques
+- Auto-notes feature to fill in all possible candidates
+- Clear notes option
+- Visual note display in a 3x3 grid
+
+### 🎨 UI Features
+- Dark/Light mode toggle
+- Multiple color themes
+- Highlight related cells (same row, column, and box)
+- Responsive design that works on desktop and mobile
+- Professional background and styling
+- Animations and visual feedback
 
 ## 🚀 Live Demo
 
@@ -53,31 +68,71 @@ streamlit run app.py
 
 ## 🎮 How to Play
 
+### Basic Rules
+1. Fill the 9×9 grid with digits 1-9
+2. Each row must contain all digits 1-9 without repetition
+3. Each column must contain all digits 1-9 without repetition
+4. Each 3×3 box must contain all digits 1-9 without repetition
+
+### Getting Started
 1. Select a difficulty level (Easy, Medium, Hard, or Expert)
 2. Click on "New Game" to start
 3. Select a cell by using the row and column selectors
 4. Enter numbers using the number buttons
 5. Use the "Hint" button if you need help
-6. Complete the grid following these rules:
-   - Each row must contain all numbers from 1-9 without repetition
-   - Each column must contain all numbers from 1-9 without repetition
-   - Each 3x3 box must contain all numbers from 1-9 without repetition
+
+### Advanced Features
+- Toggle "Notes Mode" to add small candidate numbers in cells
+- Use "Auto Notes" to automatically fill in all possible candidates
+- Toggle "Highlight Related Cells" to see cells in the same row, column, and box
+- Switch between light and dark mode for comfortable play in any environment
+- View your game history to track your progress over time
 
 ## 📝 Game Controls
 
+### Main Controls
 - **New Game**: Start a new puzzle with selected difficulty
 - **Hint**: Get help with a cell (increases hint counter)
 - **Solve Puzzle**: Automatically solve the current puzzle
 - **Reset Puzzle**: Reset the current puzzle to its initial state
 - **Select Cell**: Choose a cell to modify
 - **Number Buttons**: Enter a number in the selected cell
+- **Clear Cell**: Remove the number from the selected cell
+
+### Notes Features
+- **Notes Mode**: Toggle between entering numbers and notes
+- **Auto Notes**: Automatically fill in all possible candidates for empty cells
+- **Clear Notes**: Remove all notes from the selected cell
+- **Clear All Notes**: Remove all notes from the board
+
+### Settings
+- **Theme**: Choose from multiple color themes (Blue, Green, Purple, Dark)
+- **Dark/Light Mode**: Toggle between dark and light mode
+- **Highlight Related Cells**: Toggle highlighting of cells in the same row, column, and box
+- **Timer Active**: Toggle the game timer on/off
+
+### Keyboard Shortcuts
+- **Number Keys (1-9)**: Enter numbers in the selected cell
+- **Delete or 0**: Clear the selected cell
+- **N**: Toggle notes mode
+- **Arrow Keys**: Navigate the grid
 
 ## 📊 Game Statistics
 
-The game tracks:
-- Time elapsed
+### Real-time Stats
+The game tracks in real-time:
+- Time elapsed (with pause functionality)
 - Number of hints used
 - Number of mistakes made
+
+### Game History
+The app maintains a history of your completed games, including:
+- Date and time
+- Difficulty level
+- Completion time
+- Number of hints used
+- Number of mistakes made
+- Whether the puzzle was completed successfully
 
 ## 🧠 Algorithm
 
@@ -111,4 +166,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Made with ❤️ by [Asadullah48](https://github.com/asadullah48)"# sudoku-solver" 
+Made with ❤️ by [Asadullah48](https://github.com/asadullah48)"# sudoku-solver"
