@@ -151,23 +151,27 @@ class StreamlitCountdownTimer:
         themes = {
             "default": {
                 "progress_color": "blue",
-                "bg_color": "#f0f2f6", 
-                "text_color": "black"
+                "bg_color": "#f0f2f6",
+                "text_color": "black",
+                "bg_image": "linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)"
             },
             "dark": {
                 "progress_color": "green",
-                "bg_color": "#262730", 
-                "text_color": "white"
+                "bg_color": "#262730",
+                "text_color": "white",
+                "bg_image": "linear-gradient(to right, #434343 0%, black 100%)"
             },
             "ocean": {
                 "progress_color": "#0083B8",
-                "bg_color": "#E1F2F7", 
-                "text_color": "#00557A"
+                "bg_color": "#E1F2F7",
+                "text_color": "#00557A",
+                "bg_image": "linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%)"
             },
             "sunset": {
                 "progress_color": "#FF5F1F",
-                "bg_color": "#FFF3E0", 
-                "text_color": "#A63F03"
+                "bg_color": "#FFF3E0",
+                "text_color": "#A63F03",
+                "bg_image": "linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%)"
             }
         }
         return themes.get(st.session_state.theme, themes["default"])
@@ -178,19 +182,25 @@ class StreamlitCountdownTimer:
         
         return f"""
         <style>
+            .stApp {{
+                background: {colors['bg_image']};
+            }}
             .timer-container {{
                 background-color: {colors['bg_color']};
                 padding: 20px;
                 border-radius: 10px;
                 text-align: center;
                 margin: 10px 0;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.1);
             }}
             .timer-display {{
                 font-size: 72px;
                 font-weight: bold;
                 color: {colors['text_color']};
                 font-family: 'Courier New', monospace;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             }}
             .timer-finished {{
                 animation: pulse 1.5s infinite;
@@ -203,8 +213,27 @@ class StreamlitCountdownTimer:
             }}
             .completion-time {{
                 font-size: 14px;
-                color: gray;
+                color: {colors['text_color']};
+                opacity: 0.8;
                 margin-top: 5px;
+            }}
+            .stButton button {{
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                backdrop-filter: blur(5px);
+                transition: all 0.3s ease;
+            }}
+            .stButton button:hover {{
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            }}
+            .stProgress > div > div > div > div {{
+                background-color: {colors['progress_color']};
+            }}
+            .stSelectbox, .stNumberInput {{
+                background: rgba(255,255,255,0.1);
+                border-radius: 5px;
+                backdrop-filter: blur(5px);
             }}
         </style>
         """
@@ -215,15 +244,32 @@ class StreamlitCountdownTimer:
         st.set_page_config(
             page_title="Advanced Countdown Timer",
             page_icon="⏱️",
-            layout="wide"
+            layout="wide",
+            initial_sidebar_state="collapsed"
         )
-        
-        # Title and description
-        st.title("⏱️ Advanced Countdown Timer")
-        st.markdown("A feature-rich countdown timer web app with presets and themes")
         
         # Apply custom CSS
         st.markdown(self._get_css(), unsafe_allow_html=True)
+        
+        # Hide Streamlit default menu and footer
+        hide_streamlit_style = """
+        <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            .stDeployButton {display: none;}
+        </style>
+        """
+        st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+        
+        # Title and description with custom styling
+        st.markdown("""
+            <h1 style='text-align: center; color: #333; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);'>
+                ⏱️ Advanced Countdown Timer
+            </h1>
+            <p style='text-align: center; color: #666; margin-bottom: 2rem;'>
+                A feature-rich countdown timer web app with presets and themes
+            </p>
+        """, unsafe_allow_html=True)
         
         # Create layout with columns
         col1, col2 = st.columns([3, 1])
@@ -255,7 +301,7 @@ class StreamlitCountdownTimer:
             if st.button("Set Timer") and total_seconds > 0:
                 st.session_state.duration = total_seconds
                 self._start_timer()
-                st.experimental_rerun()
+                st.rerun()  # Updated from experimental_rerun
             
             # Presets section
             st.subheader("🔖 Timer Presets")
@@ -267,7 +313,7 @@ class StreamlitCountdownTimer:
                 if selected_preset and st.button("Load Preset"):
                     st.session_state.duration = st.session_state.presets[selected_preset]
                     self._start_timer()
-                    st.experimental_rerun()
+                    st.rerun()  # Updated from experimental_rerun
             
             # Create new preset
             st.subheader("➕ Create Preset")
@@ -277,7 +323,7 @@ class StreamlitCountdownTimer:
             if st.button("Save Preset") and preset_name and preset_minutes > 0:
                 self._create_preset(preset_name, preset_minutes * 60)
                 st.success(f"Preset '{preset_name}' saved!")
-                st.experimental_rerun()
+                st.rerun()  # Updated from experimental_rerun
                 
             # Delete preset
             if preset_options:
@@ -286,7 +332,7 @@ class StreamlitCountdownTimer:
                 if preset_to_delete and st.button("Delete", type="primary"):
                     self._delete_preset(preset_to_delete)
                     st.success(f"Preset '{preset_to_delete}' deleted!")
-                    st.experimental_rerun()
+                    st.rerun()  # Updated from experimental_rerun
         
         with col1:
             # Main timer display
@@ -327,31 +373,31 @@ class StreamlitCountdownTimer:
                     if st.button("▶️ Start", use_container_width=True):
                         if st.session_state.duration > 0:
                             self._start_timer()
-                            st.experimental_rerun()
+                            st.rerun()  # Updated from experimental_rerun
                         else:
                             st.warning("Please set a duration first")
                 else:
                     if st.session_state.paused:
                         if st.button("▶️ Resume", use_container_width=True):
                             self._resume_timer()
-                            st.experimental_rerun()
+                            st.rerun()  # Updated from experimental_rerun
                     else:
                         if st.button("⏸️ Pause", use_container_width=True):
                             self._pause_timer()
-                            st.experimental_rerun()
+                            st.rerun()  # Updated from experimental_rerun
             
             with col_b2:
                 if st.session_state.running:
                     if st.button("⏹️ Stop", use_container_width=True):
                         self._stop_timer()
-                        st.experimental_rerun()
+                        st.rerun()  # Updated from experimental_rerun
             
             with col_b3:
                 if st.session_state.running:
                     if st.button("🔄 Reset", use_container_width=True):
                         self._stop_timer()
                         self._start_timer()
-                        st.experimental_rerun()
+                        st.rerun()  # Updated from experimental_rerun
             
             # Quick buttons row
             if st.session_state.running:
@@ -361,22 +407,22 @@ class StreamlitCountdownTimer:
                 with col_q1:
                     if st.button("+10s", use_container_width=True):
                         self._add_time(10)
-                        st.experimental_rerun()
+                        st.rerun()  # Updated from experimental_rerun
                 
                 with col_q2:
                     if st.button("+1m", use_container_width=True):
                         self._add_time(60)
-                        st.experimental_rerun()
+                        st.rerun()  # Updated from experimental_rerun
                         
                 with col_q3:
                     if st.button("+5m", use_container_width=True):
                         self._add_time(300)
-                        st.experimental_rerun()
+                        st.rerun()  # Updated from experimental_rerun
                 
                 with col_q4:
                     if st.button("+10m", use_container_width=True):
                         self._add_time(600)
-                        st.experimental_rerun()
+                        st.rerun()  # Updated from experimental_rerun
             
             # Common timer buttons
             st.subheader("⏱️ Quick Start")
@@ -386,25 +432,25 @@ class StreamlitCountdownTimer:
                 if st.button("5 mins", use_container_width=True):
                     st.session_state.duration = 300
                     self._start_timer()
-                    st.experimental_rerun()
+                    st.rerun()  # Updated from experimental_rerun
             
             with col_c2:
                 if st.button("10 mins", use_container_width=True):
                     st.session_state.duration = 600
                     self._start_timer()
-                    st.experimental_rerun()
+                    st.rerun()  # Updated from experimental_rerun
             
             with col_c3:
                 if st.button("25 mins", use_container_width=True):
                     st.session_state.duration = 1500
                     self._start_timer()
-                    st.experimental_rerun()
+                    st.rerun()  # Updated from experimental_rerun
             
             with col_c4:
                 if st.button("60 mins", use_container_width=True):
                     st.session_state.duration = 3600
                     self._start_timer()
-                    st.experimental_rerun()
+                    st.rerun()  # Updated from experimental_rerun
         
         # Footer
         st.markdown("---")
@@ -413,7 +459,7 @@ class StreamlitCountdownTimer:
         # Set up auto-refresh
         if st.session_state.running and not st.session_state.paused:
             st.experimental_set_query_params(refresh=int(time.time()))
-            st.experimental_rerun()
+            st.rerun()  # Updated from experimental_rerun
 
 # Run the app
 if __name__ == "__main__":
