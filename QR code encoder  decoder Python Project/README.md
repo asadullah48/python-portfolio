@@ -1,80 +1,106 @@
-# 🔍 QR Code Generator & Scanner
+# 🔍 QR Code Studio Pro
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://qr-code-app.streamlit.app/)
-[![GitHub](https://img.shields.io/github/license/asadullah48/qr-code-app)](https://github.com/asadullah48/qr-code-app/blob/main/LICENSE)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://qr-code-studio-pro.streamlit.app/)
+[![GitHub](https://img.shields.io/github/license/asadullah48/qr-code-studio-pro)](https://github.com/asadullah48/qr-code-studio-pro/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 
-A powerful and user-friendly web application for generating and scanning QR codes with customization options.
+A professional web application built with Streamlit that allows users to generate custom QR codes with advanced styling options and scan existing ones using various methods.
 
-![App Screenshot](https://raw.githubusercontent.com/asadullah48/qr-code-app/main/app_screenshot.png)
+![App Screenshot](app_screenshot.png)
 
 ## ✨ Features
 
-- **Generate QR Codes**: Create QR codes from any text or URL
-- **Customize QR Codes**: Change colors, size, and border thickness
-- **Download QR Codes**: Save generated QR codes as image files
-- **Scan QR Codes**: Upload and decode existing QR code images
+### QR Code Generation
+- **Multiple QR Code Styles**: Standard, rounded corners, and circular designs
+- **Custom Colors**: Choose any color for QR codes and backgrounds
+- **Logo Embedding**: Add your logo to the center of QR codes
+- **Size Customization**: Adjust box size and border width
+- **Batch Generation**: Create multiple QR codes at once
+- **Download Options**: Save as PNG with one click
+
+### QR Code Scanning
+- **Image Upload**: Scan QR codes from uploaded images
+- **Webcam Scanning**: Use your device's camera to scan QR codes in real-time
+- **Visual Detection**: See highlighted QR code boundaries
+- **URL Detection**: Automatically recognize and provide clickable links
+
+### Additional Features
+- **QR Code Gallery**: View history of generated QR codes
+- **Modern UI/UX**: Beautiful gradient background and card-based design
 - **Responsive Design**: Works on desktop and mobile devices
+- **Tooltips & Guidance**: Helpful information throughout the app
 
 ## 🚀 Demo
 
-View the live demo: [QR Code Generator & Scanner App](https://qr-code-app.streamlit.app/)
+View the live demo: [QR Code Studio Pro](https://qr-code-studio-pro.streamlit.app/)
 
 ## 🛠️ Installation
 
-### Prerequisites
-- Python 3.7 or higher
+### Option 1: Local Installation
 
-### Setup Instructions
-
-1. Clone this repository:
+1. Clone this repository
    ```bash
-   git clone https://github.com/asadullah48/qr-code-app.git
-   cd qr-code-app
+   git clone https://github.com/asadullah48/qr-code-studio-pro.git
+   cd qr-code-studio-pro
    ```
 
-2. Create a virtual environment and activate it:
+2. Create a virtual environment (optional but recommended)
    ```bash
-   python -m venv venv
-   
-   # On Windows
-   venv\Scripts\activate
-   
-   # On macOS/Linux
-   source venv/bin/activate
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
-3. Install dependencies:
+3. Install the required packages
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Run the application:
+4. Run the application
    ```bash
    streamlit run app.py
    ```
 
-5. Open your browser and navigate to:
+### Option 2: Docker
+
+1. Build the Docker image
+   ```bash
+   docker build -t qr-code-studio-pro .
    ```
-   http://localhost:8501
+
+2. Run the container
+   ```bash
+   docker run -p 8501:8501 qr-code-studio-pro
    ```
 
-## 📱 Usage
+3. Open your browser and navigate to `http://localhost:8501`
 
-### Generating QR Codes
+## 📖 Usage
 
+### Generate QR Code
 1. Select "Generate QR Code" from the sidebar
-2. Enter text or URL in the input field
-3. Customize the QR code appearance (optional)
-4. Click "Generate QR Code"
-5. Download the generated QR code
+2. Choose between Standard QR, Styled QR, or QR with Logo tabs
+3. Enter the text or URL you want to encode
+4. Customize the QR code appearance using the available options
+5. Click the "Generate" button
+6. Download the generated QR code
 
-### Scanning QR Codes
-
+### Scan QR Code
 1. Select "Scan QR Code" from the sidebar
-2. Upload an image containing a QR code
-3. Click "Scan QR Code"
-4. View and copy the decoded data
+2. Choose between "Upload Image" or "Use Webcam" tabs
+3. Upload an image containing a QR code or start your webcam
+4. View the decoded data and use the provided options
+
+### QR Gallery
+1. Select "QR Gallery" from the sidebar
+2. Browse through your previously generated QR codes
+3. Download any QR code from your history
+
+### Batch Generator
+1. Select "Batch Generator" from the sidebar
+2. Enter one item per line in the text area
+3. Customize the style for all QR codes
+4. Click "Generate Batch QR Codes"
+5. Download the ZIP file containing all generated QR codes
 
 ## 📋 Implementation Details
 
@@ -135,4 +161,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Built with ❤️ by [Asadullah](https://github.com/asadullah48)"# qr-code-app" 
+Built with ❤️ by [Asadullah](https://github.com/asadullah48)"# qr-code-app"
