@@ -18,7 +18,7 @@ A modern, interactive implementation of the classic Hangman word-guessing game w
 
 ## 📸 Screenshots
 
-![Game Screenshot](https://via.placeholder.com/800x450.png?text=Hangman+Game+Screenshot)
+![Game Screenshot](./Screenshot.png)
 
 ## 🚀 Installation & Setup
 
