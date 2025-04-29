@@ -637,36 +637,39 @@ def guess_number():
     },
     {
         "id": 3,
-        "title": "Guess the Number Game (User)",
-        "description": "A reverse guessing game where the player thinks of a number and the computer tries to guess it.",
+        "title": "Minesweeper Game",
+        "description": "A classic Minesweeper game implementation where players must uncover cells while avoiding hidden mines.",
         "category": "Games",
-        "difficulty": "Beginner",
-        "key_features": ["Binary search algorithm", "AI decision making", "Feedback processing"],
-        "image": "guess_number_user.png",
-        "github_link": "https://github.com/asadullah48/guess-the-number-game",
-        "streamlit_link": "https://guess-the-number-game-pc.streamlit.app/",
-        "tech_stack": ["Python", "Streamlit"],
-        "completion_date": "2023-07-05",
-        "testimonial": "This was a fun twist on the classic guess the number game!",
-        "code_snippet": """def computer_guess(x):
-    low = 1
-    high = x
-    feedback = ''
+        "difficulty": "Intermediate",
+        "key_features": ["Grid-based gameplay", "Recursive cell revealing", "Game state management", "Mine generation algorithm"],
+        "image": "minesweeper.png",
+        "github_link": "https://github.com/asadullah48/minesweeper-game",
+        "streamlit_link": "https://minesweeper-asadullah.streamlit.app/",
+        "tech_stack": ["Python", "Pygame", "NumPy"],
+        "completion_date": "2023-09-15",
+        "testimonial": "This project really helped me understand recursive algorithms and grid-based game design!",
+        "code_snippet": """import random
 
-    while feedback != 'c':
-        if low != high:
-            guess = random.randint(low, high)
-        else:
-            guess = low
+def create_board(size, num_mines):
+    # Create an empty board
+    board = [[0 for _ in range(size)] for _ in range(size)]
 
-        feedback = input(f'Is {guess} too high (H), too low (L), or correct (C)? ').lower()
+    # Place mines randomly
+    mines_placed = 0
+    while mines_placed < num_mines:
+        x, y = random.randint(0, size-1), random.randint(0, size-1)
+        if board[x][y] != 'M':
+            board[x][y] = 'M'
+            mines_placed += 1
 
-        if feedback == 'h':
-            high = guess - 1
-        elif feedback == 'l':
-            low = guess + 1
+            # Update adjacent cell counts
+            for dx in [-1, 0, 1]:
+                for dy in [-1, 0, 1]:
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < size and 0 <= ny < size and board[nx][ny] != 'M':
+                        board[nx][ny] += 1
 
-    print(f'Yay! The computer guessed your number, {guess}, correctly!')"""
+    return board"""
     },
     # Continue with other projects...
     {
