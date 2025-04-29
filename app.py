@@ -15,9 +15,6 @@ from pathlib import Path
 import re
 import json
 import requests
-from streamlit_lottie import st_lottie
-from streamlit_option_menu import option_menu
-from streamlit_particles import particles
 
 # Page configuration
 st.set_page_config(
@@ -37,242 +34,421 @@ st.markdown("""
 <style>
     /* Light mode styles */
     :root {
-        --background-color: #f9f9f9;
-        --text-color: #333333;
+        --background-color: #f8f9fa;
+        --text-color: #212529;
         --card-bg-color: #ffffff;
-        --card-border: 1px solid #ddd;
-        --primary-color: #4CAF50;
-        --secondary-color: #3949AB;
-        --header-bg: #f0f2f6;
-        --accent-color: #FF5722;
+        --card-border: 1px solid #e9ecef;
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --header-bg: linear-gradient(135deg, #4361ee, #3a0ca3);
+        --accent-color: #f72585;
+        --success-color: #4cc9f0;
+        --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        --hover-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        --sidebar-bg: #ffffff;
+        --sidebar-text: #212529;
     }
 
     /* Dark mode styles */
     .dark-mode {
         --background-color: #121212;
-        --text-color: #e0e0e0;
+        --text-color: #f8f9fa;
         --card-bg-color: #1e1e1e;
         --card-border: 1px solid #333;
-        --primary-color: #5CBA60;
-        --secondary-color: #4959CB;
-        --header-bg: #1a1a1a;
-        --accent-color: #FF7043;
+        --primary-color: #4cc9f0;
+        --secondary-color: #7209b7;
+        --header-bg: linear-gradient(135deg, #4cc9f0, #7209b7);
+        --accent-color: #f72585;
+        --success-color: #4cc9f0;
+        --card-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        --hover-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        --sidebar-bg: #1a1a1a;
+        --sidebar-text: #f8f9fa;
+    }
+
+    /* Main container styles */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Background image/pattern */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+        z-index: -1;
+    }
+
+    .dark-mode body::before {
+        opacity: 0.2;
     }
 
     body {
         color: var(--text-color);
         background-color: var(--background-color);
         transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
     }
 
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: var(--sidebar-bg);
+        border-right: var(--card-border);
+        padding: 1rem;
+    }
+
+    [data-testid="stSidebar"] .block-container {
+        margin-top: 1rem;
+    }
+
+    /* Project card styling */
     .project-card {
         background-color: var(--card-bg-color);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 20px;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 25px;
         border: var(--card-border);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: var(--card-shadow);
         height: 100%;
         display: flex;
         flex-direction: column;
         position: relative;
+        overflow: hidden;
+    }
+
+    .project-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, var(--primary-color), var(--accent-color));
+        opacity: 0.8;
     }
 
     .project-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        transform: translateY(-8px);
+        box-shadow: var(--hover-shadow);
     }
 
+    /* Category and difficulty labels */
     .category-label {
         background-color: var(--primary-color);
         color: white;
-        padding: 4px 10px;
+        padding: 5px 12px;
         border-radius: 30px;
         font-size: 0.8em;
-        margin-right: 6px;
+        margin-right: 8px;
         display: inline-block;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .difficulty-beginner {
-        background-color: #4CAF50;
+        background: linear-gradient(135deg, #4CAF50, #8BC34A);
     }
 
     .difficulty-intermediate {
-        background-color: #FF9800;
+        background: linear-gradient(135deg, #FF9800, #FFC107);
     }
 
     .difficulty-advanced {
-        background-color: #F44336;
+        background: linear-gradient(135deg, #F44336, #FF5722);
     }
 
+    /* Header styling */
     .header-container {
         text-align: center;
-        padding: 30px;
-        background-color: var(--header-bg);
-        border-radius: 15px;
-        margin-bottom: 30px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        animation: fadeIn 1s ease-in;
+        padding: 40px 30px;
+        background: var(--header-bg);
+        border-radius: 20px;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+        color: white;
     }
 
+    .header-container::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M3 3h18v18H3V3z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        opacity: 0.2;
+        transform: rotate(45deg);
+    }
+
+    .header-container h1 {
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Animations */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-20px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .animated-card {
+        animation: slideIn 0.5s ease-out forwards;
+    }
+
+    .animated-header {
+        animation: fadeIn 1s ease-in forwards;
+    }
+
+    .pulse-animation {
+        animation: pulse 2s infinite;
+    }
+
+    /* Project count and success message */
     .project-count {
-        font-size: 1.5em;
-        color: var(--primary-color);
+        font-size: 1.8em;
+        color: white;
         font-weight: bold;
         margin: 15px 0;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .success-message {
         font-style: italic;
-        color: var(--secondary-color);
-        font-size: 1.1em;
+        color: rgba(255,255,255,0.9);
+        font-size: 1.2em;
+        max-width: 800px;
+        margin: 0 auto;
     }
 
+    /* Buttons styling */
     .view-details-btn {
-        background-color: var(--primary-color);
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         color: white;
         border: none;
-        padding: 8px 16px;
-        border-radius: 5px;
+        padding: 10px 20px;
+        border-radius: 8px;
         cursor: pointer;
         margin-top: auto;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center;
     }
 
     .view-details-btn:hover {
-        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
     }
 
+    /* Search box styling */
     .search-box {
         border-radius: 30px !important;
         border: var(--card-border) !important;
-        padding: 10px 20px !important;
+        padding: 12px 24px !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+        transition: all 0.3s ease !important;
     }
 
+    .search-box:focus {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        border-color: var(--primary-color) !important;
+    }
+
+    /* Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 10px;
+        background-color: transparent;
     }
 
     .stTabs [data-baseweb="tab"] {
-        border-radius: 4px 4px 0px 0px;
-        padding: 10px 16px;
+        border-radius: 8px 8px 0px 0px;
+        padding: 12px 20px;
         background-color: var(--card-bg-color);
+        border: var(--card-border);
+        border-bottom: none;
+        font-weight: 500;
     }
 
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: var(--primary-color);
+    }
+
+    /* Social icons */
     .social-icons {
-        font-size: 24px;
-        margin: 0 10px;
+        font-size: 28px;
+        margin: 0 12px;
         color: var(--primary-color);
         text-decoration: none;
+        transition: all 0.3s ease;
     }
 
+    .social-icons:hover {
+        color: var(--accent-color);
+        transform: translateY(-3px);
+    }
+
+    /* GitHub stats card */
     .github-stats {
         background-color: var(--card-bg-color);
-        padding: 15px;
-        border-radius: 10px;
+        padding: 20px;
+        border-radius: 16px;
         border: var(--card-border);
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
     }
 
-    /* Favorite button styles */
+    .github-stats:hover {
+        box-shadow: var(--hover-shadow);
+    }
+
+    /* Favorite button */
     .favorite-btn {
         background: none;
         border: none;
         color: #FFD700;
-        font-size: 1.5em;
+        font-size: 1.8em;
         cursor: pointer;
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+        transition: all 0.3s ease;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* Screenshot gallery styles */
+    .favorite-btn:hover {
+        transform: scale(1.2);
+    }
+
+    /* Screenshot gallery */
     .screenshot-gallery {
         display: flex;
         overflow-x: auto;
-        padding: 10px 0;
-        gap: 10px;
-        margin: 15px 0;
+        padding: 15px 0;
+        gap: 15px;
+        margin: 20px 0;
+        scrollbar-width: thin;
     }
 
     .screenshot-img {
-        max-height: 200px;
-        border-radius: 8px;
+        max-height: 220px;
+        border-radius: 12px;
         border: var(--card-border);
-        transition: transform 0.2s ease;
+        transition: all 0.3s ease;
+        box-shadow: var(--card-shadow);
     }
 
     .screenshot-img:hover {
         transform: scale(1.05);
+        box-shadow: var(--hover-shadow);
     }
 
     /* Tech stack pill */
     .tech-pill {
-        background-color: var(--accent-color);
+        background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
         color: white;
-        padding: 3px 8px;
-        border-radius: 15px;
-        font-size: 0.75em;
-        margin-right: 5px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        margin-right: 8px;
+        margin-bottom: 8px;
         display: inline-block;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* Project stats */
+    /* Project stats card */
     .stats-card {
         background-color: var(--card-bg-color);
-        border-radius: 8px;
-        padding: 15px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 15px;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 20px;
         border: var(--card-border);
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+        box-shadow: var(--hover-shadow);
+    }
+
+    .stats-card h3 {
+        margin: 0;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     /* Demo section */
     .demo-section {
         background-color: rgba(0, 0, 0, 0.03);
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px 0;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 15px 0;
+        border: var(--card-border);
     }
 
     /* Timeline */
     .timeline-container {
         position: relative;
-        padding-left: 30px;
-        margin-bottom: 20px;
+        padding-left: 40px;
+        margin-bottom: 30px;
     }
 
     .timeline-item {
         position: relative;
-        padding-bottom: 15px;
+        padding-bottom: 25px;
+        padding-left: 15px;
     }
 
     .timeline-item:before {
         content: '';
         position: absolute;
-        left: -30px;
+        left: -40px;
         top: 0;
-        width: 15px;
-        height: 15px;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
-        background-color: var(--primary-color);
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1;
     }
 
     .timeline-item:after {
         content: '';
         position: absolute;
-        left: -23px;
-        top: 15px;
+        left: -30px;
+        top: 20px;
         width: 2px;
         height: 100%;
-        background-color: var(--primary-color);
+        background: linear-gradient(to bottom, var(--primary-color), rgba(var(--primary-color-rgb), 0.2));
     }
 
     .timeline-item:last-child:after {
@@ -281,47 +457,93 @@ st.markdown("""
 
     /* Custom scrollbar */
     ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
     }
 
     ::-webkit-scrollbar-track {
         background: var(--background-color);
+        border-radius: 5px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
-        border-radius: 4px;
+        background: linear-gradient(var(--primary-color), var(--secondary-color));
+        border-radius: 5px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: var(--secondary-color);
+        background: linear-gradient(var(--secondary-color), var(--primary-color));
     }
 
-    /* Make sure emojis display at a reasonable size */
+    /* Emoji styling */
     .emoji {
-        font-size: 1.5em;
+        font-size: 1.6em;
+        margin-right: 5px;
+        vertical-align: middle;
     }
 
     /* Deployment badge */
     .deployment-badge {
-        background-color: #9C27B0;
+        background: linear-gradient(135deg, #9C27B0, #673AB7);
         color: white;
-        padding: 4px 10px;
+        padding: 6px 12px;
         border-radius: 30px;
         font-size: 0.8em;
         display: inline-block;
-        margin: 5px 0;
+        margin: 8px 0;
+        font-weight: 500;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
     }
 
-    /* Animation for cards */
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(-30px); }
-        to { opacity: 1; transform: translateX(0); }
+    .deployment-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    .animated-card {
-        animation: slideIn 0.5s ease-out;
+    /* Profile image styling */
+    .profile-image {
+        border-radius: 50%;
+        border: 3px solid var(--primary-color);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .profile-image:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-color);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    /* Skills progress bar */
+    .stProgress > div > div {
+        background-color: var(--primary-color);
+        background-image: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    }
+
+    /* Tooltip styling */
+    div[data-baseweb="tooltip"] {
+        background-color: var(--card-bg-color) !important;
+        border: var(--card-border) !important;
+        border-radius: 8px !important;
+        box-shadow: var(--card-shadow) !important;
+        color: var(--text-color) !important;
+        padding: 10px 15px !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .header-container {
+            padding: 30px 20px;
+        }
+
+        .header-container h1 {
+            font-size: 2rem;
+        }
+
+        .project-card {
+            padding: 20px;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -507,14 +729,43 @@ project_emojis = {
 # Helper function to load screenshot images
 def get_project_screenshots(project_id):
     """
-    This would typically load actual screenshots from a directory
-    For now, we'll use placeholder images
+    Load actual screenshots from the project directories or screenshorts folder
+    Falls back to placeholder images if no screenshots are found
     """
-    # In a real implementation, you would load actual images from a directory
-    # such as f"screenshots/{project_id}/"
-    num_screenshots = random.randint(2, 5)  # Simulating a random number of screenshots
-    return [get_placeholder_image(width=300, height=200, text=f"Screenshot {i+1} for Project {project_id}")
-            for i in range(num_screenshots)]
+    screenshots = []
+
+    # Try to find screenshots in the project directory
+    project_name = next((p["title"] for p in projects if p["id"] == project_id), "")
+    if project_name:
+        # Look for screenshots in the project directory
+        project_dirs = [d for d in os.listdir() if os.path.isdir(d) and project_name.lower() in d.lower()]
+
+        for project_dir in project_dirs:
+            # Check for screenshots in the project directory
+            for img_path in glob.glob(f"{project_dir}/**/*.png", recursive=True) + glob.glob(f"{project_dir}/**/*.jpg", recursive=True):
+                try:
+                    img = Image.open(img_path)
+                    screenshots.append(img)
+                except Exception as e:
+                    print(f"Error loading image {img_path}: {e}")
+
+        # If no screenshots found in project directory, check the screenshots folder
+        if not screenshots:
+            for img_path in glob.glob(f"screenshorts/project_{project_id}/*.png") + glob.glob(f"screenshorts/project_{project_id}/*.jpg"):
+                try:
+                    img = Image.open(img_path)
+                    if img.size[0] > 0 and img.size[1] > 0:  # Make sure image is valid
+                        screenshots.append(img)
+                except Exception as e:
+                    print(f"Error loading image {img_path}: {e}")
+
+    # If no screenshots found, use placeholder images
+    if not screenshots:
+        num_screenshots = random.randint(2, 4)
+        screenshots = [get_placeholder_image(width=300, height=200, text=f"Screenshot {i+1} for Project {project_id}")
+                for i in range(num_screenshots)]
+
+    return screenshots
 
 # Helper functions
 def get_placeholder_image(width=300, height=200, text=""):
@@ -534,6 +785,28 @@ def get_placeholder_image(width=300, height=200, text=""):
 
     # Create the image with the background color
     img = Image.new('RGB', (width, height), color=bg_color)
+
+    # Add text to the image if provided
+    if text:
+        try:
+            from PIL import ImageDraw, ImageFont
+            draw = ImageDraw.Draw(img)
+
+            # Use a default font
+            try:
+                font = ImageFont.truetype("arial.ttf", 20)
+            except:
+                font = ImageFont.load_default()
+
+            # Calculate text position to center it
+            text_width, text_height = draw.textsize(text, font=font) if hasattr(draw, 'textsize') else (width//2, height//2)
+            position = ((width - text_width) // 2, (height - text_height) // 2)
+
+            # Draw the text
+            draw.text(position, text, fill="white", font=font)
+        except Exception as e:
+            print(f"Error adding text to image: {e}")
+
     return img
 
 def get_image_base64(img):
@@ -568,125 +841,301 @@ def format_date(date_str):
 
 # Function to display project details
 def show_project_details(project):
-    st.markdown(f"# {project_emojis.get(project['category'], '📁')} {project['title']}")
+    # Header with project title and back button
+    st.markdown(f"""
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;">{project_emojis.get(project['category'], '📁')} {project['title']}</h1>
+        <button onclick="document.getElementById('back_btn').click();"
+                style="background: transparent;
+                       color: var(--text-color);
+                       border: 1px solid var(--primary-color);
+                       padding: 8px 16px;
+                       border-radius: 8px;
+                       cursor: pointer;
+                       font-weight: 500;
+                       transition: all 0.3s ease;">
+            ← Back to Projects
+        </button>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Category, difficulty, and deployment badge
-    badges_col1, badges_col2, badges_col3 = st.columns([1, 1, 2])
-    with badges_col1:
-        st.markdown(f"""
+    # Category, difficulty, and deployment badge in a more visually appealing layout
+    st.markdown(f"""
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
         <span class="category-label">{project['category']}</span>
-        """, unsafe_allow_html=True)
-    with badges_col2:
-        st.markdown(f"""
         <span class="category-label {get_difficulty_color(project['difficulty'])}">{project['difficulty']}</span>
-        """, unsafe_allow_html=True)
-    with badges_col3:
-        if "streamlit_link" in project:
-            st.markdown(f"""
-            <a href="{project['streamlit_link']}" target="_blank">
-                <span class="deployment-badge">🚀 Live Demo</span>
-            </a>
-            """, unsafe_allow_html=True)
+        {"<a href='" + project['streamlit_link'] + "' target='_blank'><span class='deployment-badge'>🚀 Live Demo</span></a>" if "streamlit_link" in project else ""}
+        <a href="{project['github_link']}" target="_blank" style="text-decoration: none;">
+            <span style="background: linear-gradient(135deg, #333, #666);
+                         color: white;
+                         padding: 6px 12px;
+                         border-radius: 30px;
+                         font-size: 0.8em;
+                         display: inline-block;
+                         margin: 0;
+                         font-weight: 500;
+                         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                         transition: all 0.3s ease;">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/github.svg" width="14" height="14" style="filter: invert(1); vertical-align: middle; margin-right: 5px;">
+                GitHub Repository
+            </span>
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Project image and info in columns
+    # Project overview section with modern layout
+    st.markdown("""
+    <div style="background-color: var(--card-bg-color);
+                border-radius: 16px;
+                border: var(--card-border);
+                padding: 25px;
+                margin-bottom: 30px;
+                box-shadow: var(--card-shadow);">
+        <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.5em;">📋 Project Overview</h2>
+    """, unsafe_allow_html=True)
+
+    # Project content in columns with better layout
     col1, col2 = st.columns([1, 2])
 
     with col1:
-        img = get_placeholder_image(text=project["title"])
-        st.image(img, caption=f"Project #{project['id']}: {project['title']}")
+        # Try to find a project image
+        project_image = None
+        try:
+            # Look for project image in the project directory
+            project_name = project["title"]
+            project_dirs = [d for d in os.listdir() if os.path.isdir(d) and project_name.lower() in d.lower()]
 
-        # GitHub link button
-        st.markdown(f"[View on GitHub 🔗]({project['github_link']})")
+            for project_dir in project_dirs:
+                for img_path in glob.glob(f"{project_dir}/*.png") + glob.glob(f"{project_dir}/*.jpg"):
+                    if not ("screenshot" in img_path.lower() or "screen" in img_path.lower()):
+                        project_image = Image.open(img_path)
+                        break
+        except Exception as e:
+            print(f"Error loading project image: {e}")
 
-        # Favorite button
+        # If no project image found, use placeholder
+        if not project_image:
+            project_image = get_placeholder_image(width=300, height=300, text=project["title"])
+
+        # Display project image with styling
+        st.image(project_image, caption=f"Project #{project['id']}: {project['title']}",
+                 use_column_width=True, output_format="PNG", clamp=True)
+
+        # Favorite button with better styling
         fav_status = "★ Remove from favorites" if project["id"] in st.session_state.favorites else "☆ Add to favorites"
-        if st.button(fav_status, key=f"fav_{project['id']}"):
-            toggle_favorite(project["id"])
+        fav_color = "#FFD700" if project["id"] in st.session_state.favorites else "var(--text-color)"
 
-        # Tech stack
+        st.markdown(f"""
+        <button onclick="document.getElementById('fav_{project['id']}').click();"
+                style="background: transparent;
+                       color: {fav_color};
+                       border: 1px solid {fav_color};
+                       padding: 8px 16px;
+                       border-radius: 8px;
+                       cursor: pointer;
+                       font-weight: 500;
+                       width: 100%;
+                       margin-top: 10px;
+                       transition: all 0.3s ease;">
+            {fav_status}
+        </button>
+        """, unsafe_allow_html=True)
+
+        # Tech stack with improved styling
         if "tech_stack" in project:
             st.markdown("### 🔧 Tech Stack")
+            st.markdown("""
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+            """, unsafe_allow_html=True)
+
             for tech in project["tech_stack"]:
                 st.markdown(f"""
                 <span class="tech-pill">{tech_stacks.get(tech, '🔍')} {tech}</span>
                 """, unsafe_allow_html=True)
 
-        # Completion date
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        # Completion date with better styling
         if "completion_date" in project:
-            st.markdown(f"**Completed on:** {format_date(project['completion_date'])}")
+            st.markdown(f"""
+            <div style="margin-top: 20px; padding: 15px; background-color: rgba(var(--primary-color-rgb), 0.1); border-radius: 10px;">
+                <strong>Completed on:</strong> {format_date(project['completion_date'])}
+            </div>
+            """, unsafe_allow_html=True)
 
     with col2:
-        st.markdown(f"### 📝 Description")
-        st.markdown(project["description"])
+        # Description with better styling
+        st.markdown(f"""
+        <div style="margin-bottom: 25px;">
+            <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3em;">📝 Description</h3>
+            <p style="font-size: 1.1em; line-height: 1.6;">{project["description"]}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-        st.markdown("### ✨ Key Features")
+        # Key features with better styling
+        st.markdown("""
+        <h3 style="margin-bottom: 15px; font-size: 1.3em;">✨ Key Features</h3>
+        <ul style="padding-left: 20px; margin-bottom: 25px;">
+        """, unsafe_allow_html=True)
+
         for feature in project["key_features"]:
-            st.markdown(f"- {feature}")
+            st.markdown(f"""
+            <li style="margin-bottom: 8px; font-size: 1.05em;">{feature}</li>
+            """, unsafe_allow_html=True)
 
-        # Show testimonial if available
+        st.markdown("</ul>", unsafe_allow_html=True)
+
+        # Show testimonial if available with better styling
         if "testimonial" in project:
-            st.markdown("### 💬 User Feedback")
-            st.info(f'"{project["testimonial"]}"')
+            st.markdown("""
+            <h3 style="margin-bottom: 15px; font-size: 1.3em;">💬 User Feedback</h3>
+            <div style="background-color: rgba(var(--primary-color-rgb), 0.1);
+                        border-left: 4px solid var(--primary-color);
+                        padding: 15px;
+                        border-radius: 4px;
+                        margin-bottom: 25px;
+                        font-style: italic;">
+            """, unsafe_allow_html=True)
 
-        # Code snippet if available
-        if "code_snippet" in project:
-            st.markdown("### 💻 Sample Code")
-            st.code(project["code_snippet"], language="python")
+            st.markdown(f'"{project["testimonial"]}"', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-    # Screenshots gallery
-    st.markdown("### 📸 Screenshots")
-    screenshots = get_project_screenshots(project["id"])
+    # Close the project overview card
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Display screenshots in a scrollable container
+    # Code snippet if available with better styling
+    if "code_snippet" in project:
+        st.markdown("""
+        <div style="background-color: var(--card-bg-color);
+                    border-radius: 16px;
+                    border: var(--card-border);
+                    padding: 25px;
+                    margin-bottom: 30px;
+                    box-shadow: var(--card-shadow);">
+            <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.5em;">💻 Sample Code</h2>
+        """, unsafe_allow_html=True)
+
+        st.code(project["code_snippet"], language="python")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # Screenshots gallery with better styling
     st.markdown("""
-    <div class="screenshot-gallery">
+    <div style="background-color: var(--card-bg-color);
+                border-radius: 16px;
+                border: var(--card-border);
+                padding: 25px;
+                margin-bottom: 30px;
+                box-shadow: var(--card-shadow);">
+        <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.5em;">📸 Screenshots</h2>
     """, unsafe_allow_html=True)
 
-    screenshot_cols = st.columns(len(screenshots))
-    for idx, img in enumerate(screenshots):
-        with screenshot_cols[idx]:
-            st.image(img, caption=f"Screenshot {idx+1}", use_container_width=True)
+    # Get screenshots
+    screenshots = get_project_screenshots(project["id"])
 
-    # Add tabs for more project details
+    # Display screenshots in a scrollable container with better styling
+    st.markdown("""
+    <div class="screenshot-gallery" style="padding-bottom: 10px;">
+    """, unsafe_allow_html=True)
+
+    for idx, img in enumerate(screenshots):
+        # Convert image to base64 for display
+        img_base64 = get_image_base64(img)
+
+        st.markdown(f"""
+        <div style="display: inline-block; margin-right: 15px;">
+            <img src="data:image/png;base64,{img_base64}" class="screenshot-img" alt="Screenshot {idx+1}" />
+            <p style="text-align: center; margin-top: 8px; font-size: 0.9em; color: var(--text-color);">Screenshot {idx+1}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Add tabs for more project details with better styling
+    st.markdown("""
+    <div style="background-color: var(--card-bg-color);
+                border-radius: 16px;
+                border: var(--card-border);
+                padding: 25px;
+                margin-bottom: 30px;
+                box-shadow: var(--card-shadow);">
+        <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 1.5em;">📚 Additional Information</h2>
+    """, unsafe_allow_html=True)
+
     tabs = st.tabs(["✨ Features", "🎮 Demo", "💬 Feedback", "📚 Documentation"])
 
     with tabs[0]:
         st.markdown("### Detailed Features")
         st.markdown("""
-        This project demonstrates the following concepts and techniques:
+        <div style="background-color: rgba(var(--primary-color-rgb), 0.05);
+                    border-radius: 10px;
+                    padding: 20px;
+                    margin-top: 15px;">
+            <p style="margin-top: 0;">This project demonstrates the following concepts and techniques:</p>
 
-        1. **Core Functionality**
-           - Implementation of the main features
-           - Error handling and edge cases
+            <h4 style="margin-bottom: 10px; color: var(--primary-color);">1. Core Functionality</h4>
+            <ul>
+                <li>Implementation of the main features</li>
+                <li>Error handling and edge cases</li>
+            </ul>
 
-        2. **Code Organization**
-           - Modular code structure
-           - Clean separation of concerns
+            <h4 style="margin-bottom: 10px; margin-top: 20px; color: var(--primary-color);">2. Code Organization</h4>
+            <ul>
+                <li>Modular code structure</li>
+                <li>Clean separation of concerns</li>
+            </ul>
 
-        3. **User Experience**
-           - Intuitive interface
-           - Clear feedback to user actions
-        """)
+            <h4 style="margin-bottom: 10px; margin-top: 20px; color: var(--primary-color);">3. User Experience</h4>
+            <ul>
+                <li>Intuitive interface</li>
+                <li>Clear feedback to user actions</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
     with tabs[1]:
         st.markdown("### Interactive Demo")
         if "streamlit_link" in project:
             st.markdown(f"""
-            <div class="demo-section">
-                <h4>Try it yourself!</h4>
+            <div class="demo-section" style="text-align: center; padding: 30px;">
+                <h4 style="margin-top: 0;">Try it yourself!</h4>
                 <p>Experience this project live on Streamlit:</p>
-                <a href="{project['streamlit_link']}" target="_blank">
-                    <button style="background-color: #FF4B4B; color: white; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer;">
-                        Launch Demo App
+                <a href="{project['streamlit_link']}" target="_blank" style="text-decoration: none;">
+                    <button style="background: linear-gradient(135deg, #FF4B4B, #FF8F8F);
+                                   color: white;
+                                   border: none;
+                                   padding: 12px 24px;
+                                   border-radius: 8px;
+                                   cursor: pointer;
+                                   font-weight: 500;
+                                   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                   transition: all 0.3s ease;
+                                   margin-top: 10px;">
+                        <span style="font-size: 1.2em;">🚀</span> Launch Demo App
                     </button>
                 </a>
+                <p style="margin-top: 20px; font-size: 0.9em; color: var(--text-color);">
+                    Note: The app is hosted on Streamlit Cloud and may take a few seconds to load if it hasn't been accessed recently.
+                </p>
             </div>
             """, unsafe_allow_html=True)
         else:
             st.info("Demo coming soon! Check the GitHub repository for the latest updates.")
 
     with tabs[2]:
-        st.write("How would you rate this project?")
+        st.markdown("### Project Feedback")
+        st.markdown("""
+        <div style="background-color: rgba(var(--primary-color-rgb), 0.05);
+                    border-radius: 10px;
+                    padding: 20px;
+                    margin-top: 15px;
+                    text-align: center;">
+            <h4 style="margin-top: 0;">How would you rate this project?</h4>
+            <p>Your feedback helps improve future projects!</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Rating buttons with better styling
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
             st.button("⭐", key=f"rate1_{project['id']}")
@@ -699,37 +1148,54 @@ def show_project_details(project):
         with col5:
             st.button("⭐⭐⭐⭐⭐", key=f"rate5_{project['id']}")
 
-        st.text_area("Leave a comment", key=f"comment_{project['id']}")
+        # Comment box with better styling
+        st.text_area("Leave a comment", key=f"comment_{project['id']}",
+                    placeholder="Share your thoughts about this project...")
+
+        # Submit button with better styling
         if st.button("Submit Feedback", key=f"submit_{project['id']}"):
-            st.success("Thank you for your feedback!")
+            st.success("Thank you for your feedback! Your input is valuable for future improvements.")
 
     with tabs[3]:
         st.markdown("### Documentation")
         st.markdown("""
-        #### Installation
-        ```bash
-        git clone [repository-url]
-        cd [project-directory]
-        pip install -r requirements.txt
-        ```
+        <div style="background-color: rgba(var(--primary-color-rgb), 0.05);
+                    border-radius: 10px;
+                    padding: 20px;
+                    margin-top: 15px;">
+            <h4 style="margin-top: 0; color: var(--primary-color);">Installation</h4>
+            <pre style="background-color: var(--card-bg-color);
+                        padding: 15px;
+                        border-radius: 8px;
+                        border: var(--card-border);
+                        margin-bottom: 20px;">
+git clone [repository-url]
+cd [project-directory]
+pip install -r requirements.txt</pre>
 
-        #### Usage
-        ```bash
-        streamlit run app.py
-        ```
+            <h4 style="color: var(--primary-color);">Usage</h4>
+            <pre style="background-color: var(--card-bg-color);
+                        padding: 15px;
+                        border-radius: 8px;
+                        border: var(--card-border);
+                        margin-bottom: 20px;">
+streamlit run app.py</pre>
 
-        #### Configuration
-        Customize the behavior by modifying settings in the `config.py` file.
+            <h4 style="color: var(--primary-color);">Configuration</h4>
+            <p>Customize the behavior by modifying settings in the <code>config.py</code> file.</p>
 
-        #### Contributing
-        Contributions are welcome! Please feel free to submit a Pull Request.
-        """)
+            <h4 style="color: var(--primary-color); margin-top: 20px;">Contributing</h4>
+            <p>Contributions are welcome! Please feel free to submit a Pull Request.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Back button
-    if st.button("← Back to Projects"):
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Back button (hidden, activated by the button in the header)
+    if st.button("Back to Projects", key="back_btn"):
         st.session_state.show_project_details = False
         st.session_state.selected_project = None
-        st.experimental_rerun()
+        st.rerun()
 
 # Function to categorize projects
 def get_project_categories():
@@ -802,35 +1268,93 @@ def main():
 
     # Sidebar
     with st.sidebar:
-        st.image(get_placeholder_image(200, 200, "Profile"), caption="Asadullah")
+        # Try to find a profile picture
+        profile_pic = None
+        try:
+            # Look for profile picture in the root directory
+            for img_path in glob.glob("*.png") + glob.glob("*.jpg"):
+                if "profile" in img_path.lower() or "avatar" in img_path.lower() or "photo" in img_path.lower():
+                    profile_pic = Image.open(img_path)
+                    break
 
-        st.markdown("## 👨‍💻 About Me")
-        st.markdown("""
-        Python developer with a passion for building useful applications.
-        Currently learning and growing at GIAIC (Gen AI program).
-        """)
+            # If not found, check the screenshots directory
+            if not profile_pic:
+                for img_path in glob.glob("screenshorts/*.png") + glob.glob("screenshorts/*.jpg"):
+                    if "profile" in img_path.lower() or "avatar" in img_path.lower() or "photo" in img_path.lower():
+                        profile_pic = Image.open(img_path)
+                        break
+        except Exception as e:
+            print(f"Error loading profile picture: {e}")
 
-        # Dark mode toggle
-        if st.toggle("🌓 Dark Mode", key="toggle_dark_mode"):
-            st.session_state.dark_mode = not st.session_state.dark_mode
+        # If no profile picture found, use placeholder
+        if not profile_pic:
+            profile_pic = get_placeholder_image(200, 200, "Asadullah")
+
+        # Display profile picture with styling
+        # Convert image to base64 for custom styling
+        profile_pic_base64 = get_image_base64(profile_pic)
+
+        st.markdown(f"""
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <div style="text-align: center;">
+                <img src="data:image/png;base64,{profile_pic_base64}"
+                     width="180"
+                     class="profile-image"
+                     style="border-radius: 50%; border: 3px solid var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1);" />
+                <p style="margin-top: 8px; font-weight: 500;">Asadullah</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Dark mode toggle with better styling
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            dark_mode = st.toggle("🌓", value=st.session_state.dark_mode, key="toggle_dark_mode")
+        with col2:
+            st.markdown("<span style='margin-top: 5px; display: inline-block;'>Dark Mode</span>", unsafe_allow_html=True)
+
+        if dark_mode != st.session_state.dark_mode:
+            st.session_state.dark_mode = dark_mode
             st.markdown("""
             <script>
                 document.body.classList.toggle('dark-mode');
             </script>
             """, unsafe_allow_html=True)
 
-        st.markdown("---")
+        # About Me section with better styling
+        st.markdown("## 👨‍💻 About Me")
+        st.markdown("""
+        <div style="background-color: var(--card-bg-color); padding: 15px; border-radius: 10px; border: var(--card-border); margin-bottom: 20px; box-shadow: var(--card-shadow);">
+            Python developer with a passion for building useful applications and solving real-world problems through code.
+            <br><br>
+            Currently learning and growing at GIAIC (Gen AI program), focusing on AI/ML technologies and full-stack development.
+            <br><br>
+            <strong>Location:</strong> Pakistan 🇵🇰<br>
+            <strong>Education:</strong> Computer Science<br>
+            <strong>Experience:</strong> 2+ years in Python development
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Quick links
-        st.markdown("## 🔗 Quick Links")
-        st.markdown("[🐙 GitHub](https://github.com/asadullah48)")
-        st.markdown("[💼 LinkedIn](https://www.linkedin.com/in/asadullah-shafique-a00679325/)")
-        st.markdown("[📝 Blog](https://medium.com/@texcotembroiderysourcinghouse")
+        # Quick links with improved styling
+        st.markdown("## 🔗 Connect With Me")
+        st.markdown("""
+        <div style="display: flex; justify-content: center; margin: 20px 0;">
+            <a href="https://github.com/asadullah48" target="_blank" class="social-icons">
+                <i class="fab fa-github"></i>
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/github.svg" width="30" height="30" style="filter: var(--icon-filter);">
+            </a>
+            <a href="https://www.linkedin.com/in/asadullah-shafique-a00679325/" target="_blank" class="social-icons">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg" width="30" height="30" style="filter: var(--icon-filter);">
+            </a>
+            <a href="https://medium.com/@texcotembroiderysourcinghouse" target="_blank" class="social-icons">
+                <img src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/medium.svg" width="30" height="30" style="filter: var(--icon-filter);">
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
 
-        st.markdown("---")
-
-        # Skills section
+        # Skills section with improved visualization
         st.markdown("## 🛠️ Skills")
+
         skills = {
             "Python": 90,
             "Web Development": 75,
@@ -839,24 +1363,63 @@ def main():
             "UI/UX Design": 60
         }
 
+        # Create a more visually appealing skills display
         for skill, level in skills.items():
-            st.markdown(f"**{skill}**")
-            st.progress(level/100)
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.markdown(f"**{skill}**")
+                st.progress(level/100)
+            with col2:
+                st.markdown(f"<h4 style='text-align: right; margin: 0; color: var(--primary-color);'>{level}%</h4>", unsafe_allow_html=True)
 
-        st.markdown("---")
+        # Download CV button
+        st.markdown("""
+        <div style="text-align: center; margin: 25px 0 15px 0;">
+            <a href="#" style="text-decoration: none;">
+                <button style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                               color: white;
+                               border: none;
+                               padding: 10px 20px;
+                               border-radius: 8px;
+                               cursor: pointer;
+                               font-weight: 500;
+                               box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                               transition: all 0.3s ease;
+                               width: 100%;">
+                    📄 Download CV
+                </button>
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Show favorites
-        # ... inside the sidebar ...
+        st.markdown("<hr style='margin: 30px 0;'>", unsafe_allow_html=True)
+
+        # Show favorites with improved styling
         if st.session_state.favorites:
             st.markdown("## ⭐ Favorites")
+            st.markdown("<div style='max-height: 300px; overflow-y: auto;'>", unsafe_allow_html=True)
+
             for project_id in st.session_state.favorites:
                 project = next((p for p in projects if p["id"] == project_id), None)
                 if project:
-                    # Corrected: Removed the duplicate/incomplete 'if' statement above
-                    if st.button(f"🔖 {project['title']}", key=f"fav_sidebar_{project_id}"):
+                    st.markdown(f"""
+                    <div style="background-color: var(--card-bg-color);
+                                padding: 10px 15px;
+                                border-radius: 10px;
+                                margin-bottom: 10px;
+                                border: var(--card-border);
+                                transition: all 0.3s ease;
+                                box-shadow: var(--card-shadow);">
+                        <span style="font-weight: 500;">{project_emojis.get(project['category'], '📁')} {project['title']}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    if st.button(f"View Details", key=f"fav_sidebar_{project_id}"):
                         st.session_state.selected_project = project_id
                         st.session_state.show_project_details = True
-                        st.experimental_rerun()
+                        st.rerun()
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
     # Apply dark mode if enabled
     if st.session_state.dark_mode:
@@ -866,29 +1429,123 @@ def main():
         </script>
         """, unsafe_allow_html=True)
 
-    # Header
+    # Header with animated background and modern design
     st.markdown("""
-    <div class="header-container">
-        <h1>🐍 Python Projects Portfolio 🚀</h1>
-        <p class="project-count">25 Project Milestone Achievement</p>
-        <p class="success-message">From beginner to advanced, a journey through Python development</p>
+    <div class="header-container animated-header">
+        <div class="header-content">
+            <h1>🐍 Python Projects Portfolio 🚀</h1>
+            <p class="project-count pulse-animation">25 Project Milestone Achievement</p>
+            <p class="success-message">From beginner to advanced, a journey through Python development</p>
+
+            <div style="margin-top: 25px;">
+                <a href="#projects" style="text-decoration: none;">
+                    <button style="background: rgba(255,255,255,0.2);
+                                   color: white;
+                                   border: 2px solid white;
+                                   padding: 10px 25px;
+                                   border-radius: 30px;
+                                   cursor: pointer;
+                                   font-weight: 500;
+                                   transition: all 0.3s ease;
+                                   backdrop-filter: blur(5px);
+                                   margin: 0 10px;">
+                        Explore Projects
+                    </button>
+                </a>
+                <a href="https://github.com/asadullah48" target="_blank" style="text-decoration: none;">
+                    <button style="background: rgba(255,255,255,0.2);
+                                   color: white;
+                                   border: 2px solid white;
+                                   padding: 10px 25px;
+                                   border-radius: 30px;
+                                   cursor: pointer;
+                                   font-weight: 500;
+                                   transition: all 0.3s ease;
+                                   backdrop-filter: blur(5px);
+                                   margin: 0 10px;">
+                        GitHub Profile
+                    </button>
+                </a>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # About section
-    st.markdown("## 🌟 About My Journey")
-    st.write("""
-    Welcome to my portfolio of 25 Python projects built with Streamlit! This collection represents my growth
-    as a developer, from simple console games to complex AI applications. Each project has been a stepping stone
-    in my learning journey, challenging me to expand my skills and explore new technologies.
+    # About section with card-based layout
+    st.markdown('<div id="about"></div>', unsafe_allow_html=True)
 
-    I'm grateful to my mentors at GIAIC - Sir Zia, Sir Arif Karim, and Sir Ameen Alam - for their guidance
-    and to my fellow students for their support and collaborative spirit. This portfolio is a testament to what
-    can be achieved through consistent learning and practice.
+    about_col1, about_col2 = st.columns([2, 1])
 
-    Feel free to explore my projects, check out their GitHub repositories, and reach out if you'd like to
-    connect or collaborate!
-    """)
+    with about_col1:
+        st.markdown("## 🌟 About My Journey")
+        st.markdown("""
+        <div style="background-color: var(--card-bg-color);
+                    padding: 25px;
+                    border-radius: 16px;
+                    border: var(--card-border);
+                    box-shadow: var(--card-shadow);
+                    margin-bottom: 20px;">
+            <p style="font-size: 1.1em; line-height: 1.6;">
+                Welcome to my portfolio of <strong>25 Python projects</strong> built with Streamlit! This collection represents my growth
+                as a developer, from simple console games to complex AI applications. Each project has been a stepping stone
+                in my learning journey, challenging me to expand my skills and explore new technologies.
+                <br><br>
+                I'm grateful to my mentors at <strong>GIAIC</strong> - Sir Zia, Sir Arif Karim, and Sir Ameen Alam - for their guidance
+                and to my fellow students for their support and collaborative spirit. This portfolio is a testament to what
+                can be achieved through consistent learning and practice.
+                <br><br>
+                Feel free to explore my projects, check out their GitHub repositories, and reach out if you'd like to
+                connect or collaborate!
+            </p>
+
+            <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">Streamlit</span>
+                <span class="tech-pill">Data Analysis</span>
+                <span class="tech-pill">Web Development</span>
+                <span class="tech-pill">Game Development</span>
+                <span class="tech-pill">Machine Learning</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with about_col2:
+        # Key stats in visually appealing cards
+        st.markdown("""
+        <div style="height: 100%; display: flex; flex-direction: column; justify-content: center;">
+            <div style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                        color: white;
+                        padding: 20px;
+                        border-radius: 16px;
+                        text-align: center;
+                        margin-bottom: 20px;
+                        box-shadow: var(--card-shadow);">
+                <h1 style="font-size: 3em; margin: 0; font-weight: 800;">25</h1>
+                <p style="margin: 5px 0 0 0; font-size: 1.2em;">Python Projects</p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #FF9800, #F44336);
+                        color: white;
+                        padding: 20px;
+                        border-radius: 16px;
+                        text-align: center;
+                        margin-bottom: 20px;
+                        box-shadow: var(--card-shadow);">
+                <h1 style="font-size: 3em; margin: 0; font-weight: 800;">7</h1>
+                <p style="margin: 5px 0 0 0; font-size: 1.2em;">Categories</p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #4CAF50, #8BC34A);
+                        color: white;
+                        padding: 20px;
+                        border-radius: 16px;
+                        text-align: center;
+                        box-shadow: var(--card-shadow);">
+                <h1 style="font-size: 3em; margin: 0; font-weight: 800;">100%</h1>
+                <p style="margin: 5px 0 0 0; font-size: 1.2em;">Deployed on Streamlit</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     # Project Stats Overview
     stats = get_project_stats()
@@ -975,47 +1632,91 @@ def main():
     # Card View
     with view_tabs[0]:
         # Display projects in grid
-        st.markdown(f"### Projects ({len(filtered_projects)})")
+        st.markdown('<div id="projects"></div>', unsafe_allow_html=True)
+        st.markdown(f"## 🚀 Explore Projects ({len(filtered_projects)})")
 
         # Show featured project if no filters
         if not search_query and not category_filter and not difficulty_filter:
             featured_project = next((p for p in projects if p["id"] == 13), projects[0])  # Sudoku Solver or first project
-            st.markdown("#### ✨ Featured Project")
+
+            st.markdown("""
+            <h3 style="display: flex; align-items: center; margin-bottom: 20px;">
+                <span style="background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+                             -webkit-background-clip: text;
+                             -webkit-text-fill-color: transparent;
+                             margin-right: 10px;
+                             font-size: 1.8em;">✨</span>
+                Featured Project
+            </h3>
+            """, unsafe_allow_html=True)
+
             with st.container():
-                col1, col2 = st.columns([1, 2])
+                # Create a more visually appealing featured project card
+                st.markdown(f"""
+                <div style="background-color: var(--card-bg-color);
+                            border-radius: 16px;
+                            border: var(--card-border);
+                            overflow: hidden;
+                            box-shadow: var(--card-shadow);
+                            transition: all 0.3s ease;
+                            margin-bottom: 30px;"
+                     class="animated-card">
+                    <div style="display: flex; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px; padding: 0;">
+                            <div style="height: 100%; min-height: 250px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 5em; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">{project_emojis.get(featured_project['category'], '📁')}</span>
+                            </div>
+                        </div>
+                        <div style="flex: 2; min-width: 300px; padding: 25px;">
+                            <h2 style="margin-top: 0; margin-bottom: 15px;">{featured_project['title']}</h2>
 
-                with col1:
-                    img = get_placeholder_image(text=featured_project["title"])
-                    st.image(img, caption=f"Featured: {featured_project['title']}")
+                            <div style="margin-bottom: 15px;">
+                                <span class="category-label">{featured_project['category']}</span>
+                                <span class="category-label {get_difficulty_color(featured_project['difficulty'])}">{featured_project['difficulty']}</span>
+                                {"<a href='" + featured_project['streamlit_link'] + "' target='_blank'><span class='deployment-badge'>🚀 Live Demo</span></a>" if "streamlit_link" in featured_project else ""}
+                            </div>
 
-                with col2:
-                    st.markdown(f"### {project_emojis.get(featured_project['category'], '📁')} {featured_project['title']}")
+                            <p style="margin-bottom: 20px; font-size: 1.1em; line-height: 1.5;">{featured_project['description']}</p>
 
-                    # Category and difficulty badges
-                    st.markdown(f"""
-                    <span class="category-label">{featured_project['category']}</span>
-                    <span class="category-label {get_difficulty_color(featured_project['difficulty'])}">{featured_project['difficulty']}</span>
-                    """, unsafe_allow_html=True)
+                            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                                <a href="javascript:void(0);" onclick="document.getElementById('featured_btn').click();" style="text-decoration: none;">
+                                    <button style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                                                   color: white;
+                                                   border: none;
+                                                   padding: 10px 20px;
+                                                   border-radius: 8px;
+                                                   cursor: pointer;
+                                                   font-weight: 500;
+                                                   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                                   transition: all 0.3s ease;">
+                                        View Details
+                                    </button>
+                                </a>
+                                <a href="{featured_project['github_link']}" target="_blank" style="text-decoration: none;">
+                                    <button style="background: transparent;
+                                                   color: var(--text-color);
+                                                   border: 1px solid var(--primary-color);
+                                                   padding: 10px 20px;
+                                                   border-radius: 8px;
+                                                   cursor: pointer;
+                                                   font-weight: 500;
+                                                   transition: all 0.3s ease;">
+                                        GitHub Repository
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    # Show streamlit link badge if available
-                    if "streamlit_link" in featured_project:
-                        st.markdown(f"""
-                        <a href="{featured_project['streamlit_link']}" target="_blank">
-                            <span class="deployment-badge">🚀 Live Demo</span>
-                        </a>
-                        """, unsafe_allow_html=True)
+                # Hidden button for the featured project
+                if st.button("View Details", key=f"featured_btn", help="View project details"):
+                    st.session_state.selected_project = featured_project["id"]
+                    st.session_state.show_project_details = True
+                    st.rerun()
 
-                    st.markdown(featured_project["description"])
-
-                    # View details button
-                    if st.button("View Details", key=f"featured_btn"):
-                        st.session_state.selected_project = featured_project["id"]
-                        st.session_state.show_project_details = True
-                        st.experimental_rerun()
-
-            st.markdown("---")
-
-        # Create rows with 3 columns each
+        # Create rows with 3 columns each for project cards
         for i in range(0, len(filtered_projects), 3):
             cols = st.columns(3)
             for j in range(3):
@@ -1026,24 +1727,55 @@ def main():
                             # Favorite status
                             fav_status = "★" if project["id"] in st.session_state.favorites else "☆"
 
+                            # Create a more visually appealing project card
                             st.markdown(f"""
                             <div class="project-card animated-card">
-                                <h3>{project_emojis.get(project['category'], '📁')} {project['title']}</h3>
-                                <span class="category-label">{project['category']}</span>
-                                <span class="category-label {get_difficulty_color(project['difficulty'])}">{project['difficulty']}</span>
-                                {"<span class='deployment-badge'>🚀 Live Demo</span>" if "streamlit_link" in project else ""}
-                                <p>{project['description'][:100]}{'...' if len(project['description']) > 100 else ''}</p>
+                                <div style="position: absolute; top: 15px; right: 15px; font-size: 1.5em; color: {'#FFD700' if project["id"] in st.session_state.favorites else '#ccc'}; cursor: pointer;" onclick="document.getElementById('fav_list_{project['id']}').click();">
+                                    {fav_status}
+                                </div>
+
+                                <div style="margin-bottom: 15px; display: flex; align-items: center;">
+                                    <span style="font-size: 2em; margin-right: 10px; color: var(--primary-color);">{project_emojis.get(project['category'], '📁')}</span>
+                                    <h3 style="margin: 0;">{project['title']}</h3>
+                                </div>
+
+                                <div style="margin-bottom: 15px;">
+                                    <span class="category-label">{project['category']}</span>
+                                    <span class="category-label {get_difficulty_color(project['difficulty'])}">{project['difficulty']}</span>
+                                </div>
+
+                                {"<a href='" + project['streamlit_link'] + "' target='_blank' style='text-decoration: none;'><span class='deployment-badge'>🚀 Live Demo</span></a>" if "streamlit_link" in project else ""}
+
+                                <p style="margin: 15px 0; flex-grow: 1;">{project['description'][:120]}{'...' if len(project['description']) > 120 else ''}</p>
+
+                                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                                    <button class="view-details-btn" onclick="document.getElementById('btn_{project['id']}').click();">
+                                        View Details
+                                    </button>
+                                    <a href="{project['github_link']}" target="_blank" style="text-decoration: none;">
+                                        <button style="background: transparent;
+                                                       color: var(--text-color);
+                                                       border: 1px solid var(--primary-color);
+                                                       padding: 8px 12px;
+                                                       border-radius: 8px;
+                                                       cursor: pointer;
+                                                       transition: all 0.3s ease;">
+                                            GitHub
+                                        </button>
+                                    </a>
+                                </div>
                             </div>
                             """, unsafe_allow_html=True)
 
-                            col1, col2 = st.columns([3, 1])
+                            # Hidden buttons for functionality
+                            col1, col2 = st.columns([1, 1])
                             with col1:
-                                if st.button(f"View Details", key=f"btn_{project['id']}"):
+                                if st.button("View", key=f"btn_{project['id']}", help="View project details"):
                                     st.session_state.selected_project = project["id"]
                                     st.session_state.show_project_details = True
                                     st.rerun()
                             with col2:
-                                if st.button(fav_status, key=f"fav_list_{project['id']}"):
+                                if st.button(fav_status, key=f"fav_list_{project['id']}", help="Add to favorites"):
                                     toggle_favorite(project["id"])
 
     # List View
