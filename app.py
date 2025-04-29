@@ -644,7 +644,7 @@ def guess_number():
         "key_features": ["Binary search algorithm", "AI decision making", "Feedback processing"],
         "image": "guess_number_user.png",
         "github_link": "https://github.com/asadullah48/guess-the-number-game",
-        "streamlit_link": "https://guess-number-user-asadullah.streamlit.app/",
+        "streamlit_link": "https://guess-the-number-game-pc.streamlit.app/",
         "tech_stack": ["Python", "Streamlit"],
         "completion_date": "2023-07-05",
         "testimonial": "This was a fun twist on the classic guess the number game!",
