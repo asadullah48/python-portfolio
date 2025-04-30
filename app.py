@@ -736,37 +736,71 @@ def get_project_screenshots(project_id):
     Falls back to placeholder images if no screenshots are found
     """
     screenshots = []
+    project = next((p for p in projects if p["id"] == project_id), None)
+    project_name = project["title"] if project else ""
 
-    # Try to find screenshots in the project directory
-    project_name = next((p["title"] for p in projects if p["id"] == project_id), "")
-    if project_name:
-        # Look for screenshots in the project directory
-        project_dirs = [d for d in os.listdir() if os.path.isdir(d) and project_name.lower() in d.lower()]
+    print(f"Looking for screenshots for project {project_id}: {project_name}")
 
-        for project_dir in project_dirs:
-            # Check for screenshots in the project directory
-            for img_path in glob.glob(f"{project_dir}/**/*.png", recursive=True) + glob.glob(f"{project_dir}/**/*.jpg", recursive=True):
-                try:
-                    img = Image.open(img_path)
+    # APPROACH 1: Check in screenshorts/project_X directory (most specific)
+    project_screenshot_dir = f"screenshorts/project_{project_id}"
+    if os.path.exists(project_screenshot_dir) and os.path.isdir(project_screenshot_dir):
+        print(f"Looking in {project_screenshot_dir}")
+        for img_path in sorted(glob.glob(f"{project_screenshot_dir}/*.png") + glob.glob(f"{project_screenshot_dir}/*.jpg")):
+            try:
+                print(f"Found screenshot: {img_path}")
+                img = Image.open(img_path)
+                if img.size[0] > 0 and img.size[1] > 0:  # Make sure image is valid
                     screenshots.append(img)
-                except Exception as e:
-                    print(f"Error loading image {img_path}: {e}")
+            except Exception as e:
+                print(f"Error loading image {img_path}: {e}")
 
-        # If no screenshots found in project directory, check the screenshots folder
-        if not screenshots:
-            for img_path in glob.glob(f"screenshorts/project_{project_id}/*.png") + glob.glob(f"screenshorts/project_{project_id}/*.jpg"):
+    # APPROACH 2: Check in screenshorts directory for files containing project name or ID
+    if not screenshots and project_name:
+        print(f"Looking in screenshorts directory for files matching project name: {project_name}")
+        for img_path in sorted(glob.glob("screenshorts/*.png") + glob.glob("screenshorts/*.jpg")):
+            file_name = os.path.basename(img_path).lower()
+            project_name_simplified = project_name.lower().replace(" ", "").replace("-", "").replace("_", "")
+            file_name_simplified = file_name.replace(" ", "").replace("-", "").replace("_", "")
+
+            # Check if file name contains project name or project ID
+            if (project_name_simplified in file_name_simplified or
+                f"project{project_id}" in file_name_simplified or
+                f"proj{project_id}" in file_name_simplified):
                 try:
+                    print(f"Found screenshot: {img_path}")
                     img = Image.open(img_path)
                     if img.size[0] > 0 and img.size[1] > 0:  # Make sure image is valid
                         screenshots.append(img)
                 except Exception as e:
                     print(f"Error loading image {img_path}: {e}")
 
+    # APPROACH 3: Check in project directory if it exists
+    if not screenshots and project_name:
+        print(f"Looking for project directory matching: {project_name}")
+        project_dirs = [d for d in os.listdir() if os.path.isdir(d) and project_name.lower() in d.lower()]
+
+        for project_dir in project_dirs:
+            print(f"Looking in project directory: {project_dir}")
+            # Check for screenshots in the project directory
+            for img_path in sorted(glob.glob(f"{project_dir}/**/*.png", recursive=True) +
+                                  glob.glob(f"{project_dir}/**/*.jpg", recursive=True)):
+                if "screenshot" in img_path.lower() or "screen" in img_path.lower():
+                    try:
+                        print(f"Found screenshot: {img_path}")
+                        img = Image.open(img_path)
+                        if img.size[0] > 0 and img.size[1] > 0:  # Make sure image is valid
+                            screenshots.append(img)
+                    except Exception as e:
+                        print(f"Error loading image {img_path}: {e}")
+
     # If no screenshots found, use placeholder images
     if not screenshots:
+        print(f"No screenshots found for project {project_id}. Using placeholders.")
         num_screenshots = random.randint(2, 4)
         screenshots = [get_placeholder_image(width=300, height=200, text=f"Screenshot {i+1} for Project {project_id}")
                 for i in range(num_screenshots)]
+    else:
+        print(f"Found {len(screenshots)} screenshots for project {project_id}")
 
     return screenshots
 
@@ -1274,23 +1308,52 @@ def main():
         # Try to find a profile picture
         profile_pic = None
         try:
-            # Look for profile picture in the root directory
-            for img_path in glob.glob("*.png") + glob.glob("*.jpg"):
-                if "profile" in img_path.lower() or "avatar" in img_path.lower() or "photo" in img_path.lower():
-                    profile_pic = Image.open(img_path)
+            # First, try to load the profile picture from the specific path
+            # IMPORTANT: Place your profile picture in the root directory or in the screenshorts folder
+            # with a name like "profile.jpg", "profile_pic.png", "avatar.jpg", etc.
+            profile_paths = [
+                "profile.jpg", "profile.png", "avatar.jpg", "avatar.png",
+                "profile_pic.jpg", "profile_pic.png", "photo.jpg", "photo.png"
+            ]
+
+            # Check root directory first
+            for profile_name in profile_paths:
+                if os.path.exists(profile_name):
+                    print(f"Found profile picture at: {profile_name}")
+                    profile_pic = Image.open(profile_name)
                     break
 
-            # If not found, check the screenshots directory
+            # If not found in root, look for any image with profile-related names
             if not profile_pic:
-                for img_path in glob.glob("screenshorts/*.png") + glob.glob("screenshorts/*.jpg"):
+                for img_path in glob.glob("*.png") + glob.glob("*.jpg"):
                     if "profile" in img_path.lower() or "avatar" in img_path.lower() or "photo" in img_path.lower():
+                        print(f"Found profile picture at: {img_path}")
                         profile_pic = Image.open(img_path)
                         break
+
+            # If still not found, check the screenshots directory
+            if not profile_pic:
+                # First check for specific profile picture in screenshorts folder
+                for profile_name in profile_paths:
+                    screenshot_profile = os.path.join("screenshorts", profile_name)
+                    if os.path.exists(screenshot_profile):
+                        print(f"Found profile picture at: {screenshot_profile}")
+                        profile_pic = Image.open(screenshot_profile)
+                        break
+
+                # Then check for any profile-like image in screenshorts folder
+                if not profile_pic:
+                    for img_path in glob.glob("screenshorts/*.png") + glob.glob("screenshorts/*.jpg"):
+                        if "profile" in img_path.lower() or "avatar" in img_path.lower() or "photo" in img_path.lower():
+                            print(f"Found profile picture at: {img_path}")
+                            profile_pic = Image.open(img_path)
+                            break
         except Exception as e:
             print(f"Error loading profile picture: {e}")
 
         # If no profile picture found, use placeholder
         if not profile_pic:
+            print("No profile picture found. Using placeholder.")
             profile_pic = get_placeholder_image(200, 200, "Asadullah")
 
         # Display profile picture with styling
