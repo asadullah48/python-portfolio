@@ -596,7 +596,7 @@ projects = [
         "streamlit_link": "https://libsgenerator.streamlit.app/",
         "tech_stack": ["Python", "TkInter"],
         "completion_date": "2025-02-15",
-        "testimonial": "Great starter project to learn string formatting and user input!",
+        "reflection": "Great starter project to learn string formatting and user input!",
         "code_snippet": """def generate_story(words):
     story = f\"\"\"
     Once upon a time, there was a {words['adjective']} {words['animal']} who loved to {words['verb']} in the {words['place']}.
@@ -616,7 +616,7 @@ projects = [
         "streamlit_link": "https://guess-number-user-asadullah.streamlit.app/",
         "tech_stack": ["Python", "Streamlit"],
         "completion_date": "2025-02-15",
-        "testimonial": "Simple but fun! Great for beginners to understand loops and conditionals.",
+        "reflection": "Simple but fun! Great for beginners to understand loops and conditionals.",
         "code_snippet": """import random
 
 def guess_number():
@@ -647,7 +647,7 @@ def guess_number():
         "streamlit_link": "https://minesweepergame.streamlit.app/",
         "tech_stack": ["Python", "Pygame", "NumPy"],
         "completion_date": "2023-09-15",
-        "testimonial": "This project really helped me understand recursive algorithms and grid-based game design!",
+        "reflection": "This project really helped me understand recursive algorithms and grid-based game design!",
         "code_snippet": """import random
 
 def create_board(size, num_mines):
@@ -684,7 +684,7 @@ def create_board(size, num_mines):
         "streamlit_link": "https://rockpaperapp.streamlit.app/",
         "tech_stack": ["Python", "Streamlit"],
         "completion_date": "2023-07-15",
-        "testimonial": "A perfect introduction to game development concepts in Python.",
+        "reflection": "A perfect introduction to game development concepts in Python.",
     },
     # Adding more projects with streamlit links (continued from original list)
     # ... add more projects with enhanced information ...
@@ -700,7 +700,7 @@ def create_board(size, num_mines):
         "streamlit_link": "https://multiplayer-pong.streamlit.app/",
         "tech_stack": ["Python", "Flask", "Socket.io", "JavaScript"],
         "completion_date": "2024-02-15",
-        "testimonial": "This project taught me a ton about networking in Python!"
+        "reflection": "This project taught me a ton about networking in Python!"
     },
     {
         "id": 21,
@@ -714,7 +714,7 @@ def create_board(size, num_mines):
         "streamlit_link": "https://explorergithu.streamlit.app/",
         "tech_stack": ["Python", "BeautifulSoup", "Requests", "Pandas"],
         "completion_date": "2023-11-20",
-        "testimonial": "My first project dealing with real-world data extraction!"
+        "reflection": "My first project dealing with real-world data extraction!"
     },
 ]
 
@@ -1022,10 +1022,10 @@ def show_project_details(project):
 
         st.markdown("</ul>", unsafe_allow_html=True)
 
-        # Show testimonial if available with better styling
-        if "testimonial" in project:
+        # Show reflection if available with better styling
+        if "reflection" in project:
             st.markdown("""
-            <h3 style="margin-bottom: 15px; font-size: 1.3em;">💬 User Feedback</h3>
+            <h3 style="margin-bottom: 15px; font-size: 1.3em;">What I learned</h3>
             <div style="background-color: rgba(var(--primary-color-rgb), 0.1);
                         border-left: 4px solid var(--primary-color);
                         padding: 15px;
@@ -1034,7 +1034,7 @@ def show_project_details(project):
                         font-style: italic;">
             """, unsafe_allow_html=True)
 
-            st.markdown(f'"{project["testimonial"]}"', unsafe_allow_html=True)
+            st.markdown(f'"{project["reflection"]}"', unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
     # Close the project overview card
